@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Our Summer in DC 💖</title>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --pink:    #F472B6;
+  --rose:    #EC4899;
+  --deep:    #BE185D;
+  --coral:   #FB7185;
+  --peach:   #FED7AA;
+  --mint:    #A7F3D0;
+  --sky:     #BAE6FD;
+  --purple:  #C4B5FD;
+  --amber:   #FCD34D;
+  --cream:   #FFF1F5;
+  --white:   #FFFFFF;
+  --gray:    #6B7280;
+  --dark:    #1F2937;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: linear-gradient(160deg, #FFF1F5 0%, #FFF9F0 50%, #F0F9FF 100%);
+  min-height: 100vh;
+  color: var(--dark);
+  overflow-x: hidden;
+}
+
+/* ── FLOATING HEARTS ─────────────────────────────────── */
+.hearts-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; }
+.heart-float {
+  position: absolute;
+  font-size: 1.2rem;
+  opacity: 0.12;
+  animation: floatUp linear infinite;
+}
+@keyframes floatUp {
+  0%   { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+  10%  { opacity: 0.12; }
+  90%  { opacity: 0.12; }
+  100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+}
+
+/* ── HERO ────────────────────────────────────────────── */
+.hero {
+  position: relative; z-index: 1;
+  text-align: center;
+  padding: 3rem 1.5rem 2rem;
+  background: linear-gradient(135deg, #FFDDE8 0%, #FFE8D0 50%, #DBEAFE 100%);
+  border-bottom: 2px dashed #FBCFE8;
+}
+.hero-logo { font-family: 'Pacifico', cursive; font-size: 2.8rem; color: var(--deep); line-height: 1.1; }
+.hero-sub { font-size: 1.05rem; color: #9D174D; font-weight: 700; margin: 0.5rem 0 1.5rem; letter-spacing: 0.5px; }
+.countdown-box {
+  display: inline-flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
+  background: white; border-radius: 1rem; padding: 1rem 2rem;
+  box-shadow: 0 4px 20px rgba(236,72,153,0.15);
+  border: 2px solid #FBCFE8;
+}
+.cd-unit { text-align: center; min-width: 60px; }
+.cd-num { font-size: 2.2rem; font-weight: 800; color: var(--rose); line-height: 1; }
+.cd-label { font-size: 0.68rem; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: 0.5px; }
+.cd-sep { font-size: 2rem; color: var(--pink); align-self: center; line-height: 1; }
+.hero-dates { margin-top: 1rem; font-size: 0.9rem; color: #9D174D; font-weight: 600; }
+.hero-emoji { font-size: 1.4rem; }
+
+/* ── STATS BAR ───────────────────────────────────────── */
+.stats {
+  position: relative; z-index: 1;
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 0.8rem;
+  padding: 1.2rem 1rem;
+  background: white;
+  border-bottom: 1px solid #FDE8F0;
+}
+.stat-pill {
+  background: linear-gradient(135deg, #FFF1F5, #FFF);
+  border: 1.5px solid #FBCFE8;
+  border-radius: 2rem;
+  padding: 0.45rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--deep);
+  display: flex; align-items: center; gap: 0.35rem;
+}
+
+/* ── TABS ────────────────────────────────────────────── */
+.tabs-nav {
+  position: sticky; top: 0; z-index: 100;
+  display: flex; background: white;
+  border-bottom: 2px solid #FBCFE8;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tabs-nav::-webkit-scrollbar { display: none; }
+.tab-btn {
+  flex: 1; min-width: 100px;
+  padding: 0.85rem 0.5rem;
+  background: none; border: none; cursor: pointer;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.82rem; font-weight: 700;
+  color: var(--gray);
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.tab-btn.active { color: var(--rose); border-bottom-color: var(--rose); }
+.tab-btn:hover { background: #FFF1F5; }
+
+/* ── CONTENT ─────────────────────────────────────────── */
+.content { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 1.5rem 1rem 6rem; }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ── WEEK SECTION ────────────────────────────────────── */
+.week-block { margin-bottom: 2rem; }
+.week-title {
+  display: flex; align-items: center; gap: 0.6rem;
+  font-size: 1rem; font-weight: 800;
+  background: linear-gradient(135deg, var(--deep), var(--rose));
+  color: white;
+  padding: 0.7rem 1.2rem;
+  border-radius: 0.75rem 0.75rem 0 0;
+}
+.week-title .badge {
+  background: rgba(255,255,255,0.25); font-size: 0.72rem;
+  padding: 0.2rem 0.6rem; border-radius: 1rem;
+}
+
+/* ── DAY CARD ────────────────────────────────────────── */
+.day-card {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  background: white;
+  border: 1px solid #FCE7F3;
+  border-top: none;
+  transition: box-shadow 0.2s;
+  position: relative;
+}
+.day-card:last-child { border-radius: 0 0 0.75rem 0.75rem; }
+.day-card:hover { box-shadow: 0 4px 16px rgba(236,72,153,0.1); z-index: 2; }
+.day-card.completed { opacity: 0.6; }
+.day-card.completed .card-body { text-decoration: none; }
+.day-card.completed::after {
+  content: '✓';
+  position: absolute; right: 1rem; top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.5rem; color: #10B981; font-weight: 800;
+}
+
+.date-col {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 1rem 0.5rem;
+  border-right: 1px solid #FCE7F3;
+  text-align: center;
+}
+.day-name { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; color: var(--gray); letter-spacing: 0.5px; }
+.day-num  { font-size: 1.4rem; font-weight: 800; color: var(--deep); line-height: 1; }
+.month-name { font-size: 0.6rem; font-weight: 700; color: var(--gray); text-transform: uppercase; }
+
+/* Type accent strip */
+.day-card::before {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 4px;
+  border-radius: 0;
+}
+.day-card.type-evening::before  { background: #93C5FD; }
+.day-card.type-weekend::before  { background: #6EE7B7; }
+.day-card.type-holiday::before  { background: #FCD34D; }
+.day-card.type-away::before     { background: #FCA5A5; }
+.day-card.type-camp::before     { background: #34D399; }
+.day-card.type-musical::before  { background: #A78BFA; }
+.day-card.type-beach::before    { background: #38BDF8; }
+.day-card.type-nyc::before      { background: #F472B6; }
+.day-card.type-arrival::before  { background: linear-gradient(to bottom, #F472B6, #FCD34D); }
+
+.card-body { padding: 0.9rem 1rem 0.9rem 1.2rem; min-width: 0; }
+.card-top { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.3rem; }
+.type-tag {
+  font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.4px;
+  padding: 0.2rem 0.55rem; border-radius: 1rem;
+}
+.tag-evening  { background: #DBEAFE; color: #1D4ED8; }
+.tag-weekend  { background: #D1FAE5; color: #065F46; }
+.tag-holiday  { background: #FEF3C7; color: #92400E; }
+.tag-away     { background: #FEE2E2; color: #991B1B; }
+.tag-camp     { background: #ECFDF5; color: #065F46; }
+.tag-musical  { background: #EDE9FE; color: #5B21B6; }
+.tag-beach    { background: #E0F2FE; color: #0369A1; }
+.tag-nyc      { background: #FCE7F3; color: #9D174D; }
+.tag-arrival  { background: linear-gradient(135deg,#FCE7F3,#FEF3C7); color: #9D174D; }
+.tag-surprise { background: #FCE7F3; color: var(--deep); }
+
+.card-title { font-size: 0.97rem; font-weight: 800; color: var(--dark); margin-bottom: 0.2rem; }
+.card-desc  { font-size: 0.82rem; color: #4B5563; line-height: 1.5; }
+.card-footer { display: flex; align-items: center; gap: 0.6rem; margin-top: 0.5rem; flex-wrap: wrap; }
+.cost-badge { font-size: 0.72rem; font-weight: 700; background: #F0FDF4; color: #166534; border: 1px solid #BBF7D0; padding: 0.2rem 0.55rem; border-radius: 1rem; }
+.check-btn {
+  margin-left: auto;
+  background: none; border: 2px solid #D1D5DB; border-radius: 50%;
+  width: 28px; height: 28px; cursor: pointer;
+  font-size: 0.9rem; display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s; color: transparent;
+  flex-shrink: 0;
+}
+.check-btn:hover { border-color: var(--rose); }
+.check-btn.checked { background: #10B981; border-color: #10B981; color: white; }
+
+/* Surprise card */
+.surprise-blur {
+  background: linear-gradient(135deg, #FDF2F8, #FFF1F5);
+  border-radius: 0.5rem;
+  padding: 0.6rem 0.9rem;
+  border: 1.5px dashed #FBCFE8;
+  display: flex; align-items: center; gap: 0.5rem;
+  margin-top: 0.3rem;
+  font-size: 0.82rem;
+  color: var(--deep);
+  font-weight: 700;
+}
+
+/* Secret note (hidden by default) */
+.secret-note {
+  display: none;
+  background: #FFF1F5;
+  border: 2px solid var(--pink);
+  border-radius: 0.5rem;
+  padding: 0.6rem 0.9rem;
+  margin-top: 0.4rem;
+  font-size: 0.8rem;
+  color: #9D174D;
+  font-weight: 600;
+  font-style: italic;
+}
+.secret-note::before { content: '🔓 Secret: '; font-weight: 800; font-style: normal; }
+body.secret-mode .secret-note { display: block; }
+body.secret-mode .surprise-blur { display: none; }
+
+/* ── TRIP CARDS ──────────────────────────────────────── */
+.trip-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.2rem; }
+.trip-card {
+  background: white;
+  border-radius: 1rem;
+  overflow: hidden;
+  border: 1.5px solid #FCE7F3;
+  box-shadow: 0 4px 16px rgba(236,72,153,0.08);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.trip-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(236,72,153,0.15); }
+.trip-header {
+  padding: 1.2rem 1.2rem 0.8rem;
+  font-size: 1.05rem; font-weight: 800;
+}
+.trip-header.beach  { background: linear-gradient(135deg, #BAE6FD, #E0F2FE); }
+.trip-header.mn     { background: linear-gradient(135deg, #A7F3D0, #D1FAE5); }
+.trip-header.wi     { background: linear-gradient(135deg, #FCD34D, #FEF3C7); }
+.trip-header.nyc    { background: linear-gradient(135deg, #F9A8D4, #FCE7F3); }
+.trip-when { font-size: 0.78rem; font-weight: 700; color: var(--gray); margin-bottom: 0.3rem; }
+.trip-title-text { color: var(--dark); }
+.trip-body { padding: 1rem 1.2rem; }
+.trip-row { display: flex; gap: 0.6rem; margin-bottom: 0.6rem; font-size: 0.82rem; align-items: flex-start; }
+.trip-icon { font-size: 1rem; flex-shrink: 0; margin-top: 0.05rem; }
+.trip-row-text { color: #374151; line-height: 1.4; }
+.trip-cost {
+  display: inline-block;
+  background: #F0FDF4; color: #166534;
+  border: 1px solid #BBF7D0;
+  border-radius: 1rem;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.78rem; font-weight: 700;
+  margin-top: 0.3rem;
+}
+
+/* ── RESTAURANT GRID ─────────────────────────────────── */
+.resto-section { margin-bottom: 1.5rem; }
+.resto-section-title {
+  font-size: 0.8rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.5px; color: var(--rose);
+  margin-bottom: 0.8rem;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.resto-section-title::after { content: ''; flex: 1; height: 1px; background: #FBCFE8; }
+.resto-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.8rem; }
+.resto-card {
+  background: white;
+  border-radius: 0.75rem;
+  padding: 0.9rem;
+  border: 1.5px solid #FCE7F3;
+  font-size: 0.82rem;
+  transition: transform 0.2s;
+}
+.resto-card:hover { transform: translateY(-2px); }
+.resto-name { font-weight: 800; color: var(--dark); margin-bottom: 0.2rem; font-size: 0.9rem; }
+.resto-type { color: var(--gray); font-size: 0.75rem; margin-bottom: 0.3rem; }
+.resto-why  { color: #374151; line-height: 1.4; font-size: 0.78rem; }
+.resto-price { margin-top: 0.4rem; font-weight: 800; color: var(--rose); font-size: 0.78rem; }
+
+/* ── PROGRESS ────────────────────────────────────────── */
+.progress-box {
+  background: white; border-radius: 1rem;
+  padding: 1.5rem; margin-bottom: 1.5rem;
+  border: 1.5px solid #FCE7F3;
+  text-align: center;
+}
+.progress-title { font-size: 1.1rem; font-weight: 800; margin-bottom: 0.5rem; }
+.progress-bar-wrap { background: #FCE7F3; border-radius: 1rem; height: 14px; overflow: hidden; margin: 0.8rem 0; }
+.progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--pink), var(--rose)); border-radius: 1rem; transition: width 0.5s; }
+.progress-pct { font-size: 2rem; font-weight: 800; color: var(--rose); }
+.progress-note { font-size: 0.82rem; color: var(--gray); margin-top: 0.4rem; }
+.progress-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.8rem; margin-top: 1.2rem; }
+.prog-card {
+  background: #FFF1F5; border-radius: 0.75rem;
+  padding: 0.8rem; text-align: center;
+  border: 1px solid #FBCFE8;
+}
+.prog-card-num { font-size: 1.8rem; font-weight: 800; color: var(--rose); }
+.prog-card-label { font-size: 0.75rem; color: var(--gray); font-weight: 600; }
+
+/* ── SECRET BUTTON ───────────────────────────────────── */
+#secret-btn {
+  position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 200;
+  background: white;
+  border: 2px solid var(--pink);
+  border-radius: 50%; width: 52px; height: 52px;
+  font-size: 1.4rem; cursor: pointer;
+  box-shadow: 0 4px 16px rgba(244,114,182,0.3);
+  transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center;
+}
+#secret-btn:hover { transform: scale(1.1); background: #FFF1F5; }
+body.secret-mode #secret-btn { background: var(--rose); color: white; border-color: var(--rose); }
+
+/* ── MODAL ───────────────────────────────────────────── */
+.modal-overlay {
+  display: none; position: fixed; inset: 0; z-index: 300;
+  background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
+  align-items: center; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: white; border-radius: 1.25rem;
+  padding: 2rem; max-width: 360px; width: 90%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  animation: popIn 0.3s ease;
+}
+@keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal-emoji { font-size: 2.5rem; margin-bottom: 0.5rem; }
+.modal-title { font-size: 1.2rem; font-weight: 800; color: var(--dark); margin-bottom: 0.3rem; }
+.modal-sub   { font-size: 0.85rem; color: var(--gray); margin-bottom: 1.2rem; line-height: 1.5; }
+.modal-input {
+  width: 100%; padding: 0.75rem 1rem;
+  border: 2px solid #FCE7F3; border-radius: 0.75rem;
+  font-family: 'Nunito', sans-serif; font-size: 1rem; font-weight: 700;
+  text-align: center; color: var(--dark);
+  outline: none; margin-bottom: 0.8rem;
+  letter-spacing: 0.15em;
+}
+.modal-input:focus { border-color: var(--rose); }
+.modal-input.error { border-color: #EF4444; animation: shake 0.3s; }
+@keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+.modal-btn {
+  width: 100%; padding: 0.75rem;
+  background: linear-gradient(135deg, var(--pink), var(--rose));
+  color: white; border: none; border-radius: 0.75rem;
+  font-family: 'Nunito', sans-serif; font-size: 1rem; font-weight: 800;
+  cursor: pointer; transition: opacity 0.2s;
+}
+.modal-btn:hover { opacity: 0.9; }
+.modal-close {
+  margin-top: 0.8rem; font-size: 0.82rem; color: var(--gray);
+  cursor: pointer; text-decoration: underline;
+}
+
+/* ── UTILS ───────────────────────────────────────────── */
+.section-title { font-size: 1.15rem; font-weight: 800; color: var(--dark); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+.empty-state { text-align: center; padding: 3rem; color: var(--gray); font-size: 0.9rem; }
+
+@media (max-width: 480px) {
+  .hero-logo { font-size: 2rem; }
+  .cd-num { font-size: 1.8rem; }
+  .countdown-box { padding: 0.8rem 1.2rem; gap: 0.6rem; }
+  .day-card { grid-template-columns: 60px 1fr; }
+  .day-num { font-size: 1.2rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- Floating hearts -->
+<div class="hearts-bg" id="heartsContainer"></div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-logo">Our Summer in DC 💖</div>
+  <div class="hero-sub">Ashish & <span id="herNameDisplay">his love</span> · June 22 – August 16, 2026</div>
+  <div class="countdown-box" id="countdownBox">
+    <div class="cd-unit"><div class="cd-num" id="cd-days">--</div><div class="cd-label">Days</div></div>
+    <div class="cd-sep">:</div>
+    <div class="cd-unit"><div class="cd-num" id="cd-hours">--</div><div class="cd-label">Hours</div></div>
+    <div class="cd-sep">:</div>
+    <div class="cd-unit"><div class="cd-num" id="cd-mins">--</div><div class="cd-label">Minutes</div></div>
+  </div>
+  <div class="hero-dates">✈️ Arrives June 22 &nbsp;·&nbsp; 56 magical days &nbsp;·&nbsp; Departs August 16 ✈️</div>
+</div>
+
+<!-- STATS -->
+<div class="stats" id="statsBar"></div>
+
+<!-- TABS -->
+<div class="tabs-nav">
+  <button class="tab-btn active" onclick="switchTab('plan',this)">📅 The Plan</button>
+  <button class="tab-btn" onclick="switchTab('trips',this)">✈️ Our Trips</button>
+  <button class="tab-btn" onclick="switchTab('eats',this)">🍽️ Where to Eat</button>
+  <button class="tab-btn" onclick="switchTab('track',this)">💚 Progress</button>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- TAB: PLAN -->
+  <div class="tab-panel active" id="tab-plan">
+    <div id="planContainer"></div>
+  </div>
+
+  <!-- TAB: TRIPS -->
+  <div class="tab-panel" id="tab-trips">
+    <p class="section-title">✈️ Our Adventures Beyond DC</p>
+    <div class="trip-grid" id="tripsContainer"></div>
+  </div>
+
+  <!-- TAB: EATS -->
+  <div class="tab-panel" id="tab-eats">
+    <p class="section-title">🍽️ Where We're Eating This Summer</p>
+    <div id="eatsContainer"></div>
+  </div>
+
+  <!-- TAB: TRACK -->
+  <div class="tab-panel" id="tab-track">
+    <div class="progress-box">
+      <div class="progress-title">💚 Our Summer Progress</div>
+      <div class="progress-pct" id="progressPct">0%</div>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar" style="width:0%"></div></div>
+      <div class="progress-note" id="progressNote">Check off dates as you experience them together! 💕</div>
+      <div class="progress-grid" id="progressGrid"></div>
+    </div>
+    <div id="trackList"></div>
+  </div>
+
+</div>
+
+<!-- SECRET BUTTON -->
+<button id="secret-btn" onclick="openSecretModal()" title="Ashish's Secret View">🔒</button>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="secretModal">
+  <div class="modal">
+    <div class="modal-emoji">🔐</div>
+    <div class="modal-title">Secret Mode</div>
+    <div class="modal-sub">Enter the password to reveal all surprise details and secret notes! Only Ashish knows this one 🤫</div>
+    <input type="password" class="modal-input" id="secretInput" placeholder="password" onkeydown="if(event.key==='Enter') checkSecret()">
+    <button class="modal-btn" onclick="checkSecret()">Unlock Surprises 🌟</button>
+    <div class="modal-close" onclick="closeModal()">Never mind</div>
+  </div>
+</div>
+
+<script>
+// ─── CONFIG (Ashish: change HER_NAME and SECRET_PWD here!) ───
+const HER_NAME    = "My Love";        // ← Change to her actual name
+const SECRET_PWD  = "ourDC2026";      // ← Change to whatever you want
+const ARRIVAL     = new Date("2026-06-22T00:00:00");
+const DEPARTURE   = new Date("2026-08-16T23:59:59");
+// ─────────────────────────────────────────────────────────────
+
+document.getElementById("herNameDisplay").textContent = HER_NAME;
+
+// ─── DATA ─────────────────────────────────────────────────────
+const weeks = [
+{
+  title: "Week 1 · June 22–28", subtitle: "Welcome Week! 🎉",
+  days: [
+    { id:"d01", date:"Jun 22", day:"Mon", type:"arrival", tag:"💌 Arrival", emoji:"🛬",
+      title:"She Arrives in DC!",
+      desc:"The beginning of our summer together. Welcome to Washington, DC! ✨",
+      isSurprise:true,
+      secretNote:"Take at least a half day off work. Set up her room before she lands — fresh flowers, her fav snacks, a handwritten love letter, and a printed DC map with all your planned spots circled in red hearts. Play her favourite song when she walks in. 💌",
+      cost:"~$35" },
+    { id:"d02", date:"Jun 23", day:"Tue", type:"evening", tag:"🌙 Evening", emoji:"🌊",
+      title:"The Wharf Waterfront + Dinner",
+      desc:"A beautiful evening walk along the Potomac at The Wharf — great views, cool breezes, and amazing restaurants. Your first DC dinner together!",
+      cost:"~$70" },
+    { id:"d03", date:"Jun 24", day:"Wed", type:"musical", tag:"🎭 Evening", emoji:"🎭",
+      title:"Kennedy Center — Free Show Night",
+      desc:"Free Millennium Stage performance at 6pm every single night. Jazz, classical, world music. After the show: drinks on the terrace with Potomac views.",
+      isSurprise:true,
+      secretNote:"Tell her to 'dress up a little' but keep the destination secret until you arrive. The reveal is part of the surprise!",
+      cost:"~$25" },
+    { id:"d04", date:"Jun 25", day:"Thu", type:"evening", tag:"🌙 Evening", emoji:"🌅",
+      title:"Sunset Picnic on the National Mall",
+      desc:"Blanket, charcuterie, sparkling cider — watching the sun set behind the Lincoln Memorial and Washington Monument. Pure DC magic.",
+      isSurprise:true,
+      secretNote:"Pack everything secretly beforehand. Bring one flower to give her when you arrive at the spot.",
+      cost:"~$25" },
+    { id:"d05", date:"Jun 26", day:"Fri", type:"evening", tag:"🌙 Evening", emoji:"🍦",
+      title:"Georgetown Dinner + Canal Stroll + Ice Cream",
+      desc:"Dinner along M Street, a romantic walk along the C&O Canal, and ice cream at Thomas Sweet to finish. Georgetown at night is magical.",
+      cost:"~$65" },
+    { id:"d06", date:"Jun 27", day:"Sat", type:"weekend", tag:"☀️ Full Day", emoji:"🛍️",
+      title:"Eastern Market + Capitol Hill Explore",
+      desc:"DC's most beloved Saturday tradition. Local art, flowers, street food, and a walk through beautiful Capitol Hill — rowhouses, the Library of Congress, and Yards Park.",
+      isSurprise:true,
+      secretNote:"Buy her a fresh flower bouquet from the market. Let her lead and pick whatever she wants to explore.",
+      cost:"~$45" },
+    { id:"d07", date:"Jun 28", day:"Sun", type:"weekend", tag:"☀️ Full Day", emoji:"🌳",
+      title:"National Arboretum Secret Garden Picnic",
+      desc:"270 acres of hidden gardens and the iconic free-standing Capitol Columns — a beautiful green escape inside the city. One of DC's best-kept secrets.",
+      isSurprise:true,
+      secretNote:"Home-cooked picnic lunch! This will seriously impress her. Bring a good playlist and a comfy blanket.",
+      cost:"~$25" },
+  ]
+},
+{
+  title: "Week 2 · June 29 – July 6", subtitle: "4th of July! 🎆 + Beach Day! 🏖️",
+  days: [
+    { id:"d08", date:"Jun 29", day:"Mon", type:"evening", tag:"🌙 Evening", emoji:"🍳",
+      title:"Surprise Home Cook Night",
+      desc:"A cozy evening in — cooking together, candles, your favourite playlist. Some of the best nights are the quiet ones. 🕯️",
+      isSurprise:true,
+      secretNote:"Stop by an international grocery on your way home (H Mart or Yes! Organic). Text her 'don't worry about dinner tonight 😊'. Set the table nicely with candles before she arrives.",
+      cost:"~$35" },
+    { id:"d09", date:"Jun 30", day:"Tue", type:"evening", tag:"🌙 Evening", emoji:"🏙️",
+      title:"Rooftop Bar Night",
+      desc:"DC skyline views with cocktails in hand. The city looks completely different from up high — and so do you. 😍",
+      isSurprise:true,
+      secretNote:"POV Rooftop at W Hotel (overlooks the White House + Monument) or Top of the Gate. Pre-sunset arrival for best views. Order her favourite cocktail style.",
+      cost:"~$65" },
+    { id:"d10", date:"Jul 1", day:"Wed", type:"camp", tag:"🌙 Evening", emoji:"🚣",
+      title:"Evening Kayaking on the Potomac",
+      desc:"Paddling at golden hour with the monuments in the background. Key Bridge Boathouse is open till 9pm — genuinely one of the most beautiful things you can do in DC.",
+      isSurprise:true,
+      secretNote:"Reveal the plan only when you're almost at the boathouse. Tell her 'wear something you can get wet 😄'.",
+      cost:"~$45" },
+    { id:"d11", date:"Jul 2", day:"Thu", type:"musical", tag:"🎵 Evening", emoji:"🎵",
+      title:"U Street Live Jazz Night",
+      desc:"America's historic jazz corridor — live music, incredible atmosphere, and a neighbourhood that tells DC's story like no other.",
+      isSurprise:true,
+      secretNote:"Pre-book tickets at Twins Jazz or Lincoln Theatre. Keep the destination secret until you walk through the door.",
+      cost:"~$60" },
+    { id:"d12", date:"Jul 3", day:"Fri", type:"evening", tag:"🌙 Evening", emoji:"🌃",
+      title:"Pre-4th Rooftop Countdown Night",
+      desc:"Last evening before the fireworks — drinks with a DC skyline view. Building anticipation for the big day tomorrow! 🎇",
+      cost:"~$60" },
+    { id:"d13", date:"Jul 4", day:"Sat", type:"holiday", tag:"⭐ Holiday!", emoji:"🎆",
+      title:"4TH OF JULY — National Mall Fireworks!",
+      desc:"The centrepiece of the whole summer. Arrive at the Mall by 3–4pm. Free live music all afternoon, food trucks, and then the most spectacular fireworks in America at 9:15pm over the monuments. ✨🇺🇸✨",
+      isSurprise:true,
+      secretNote:"SURPRISE SETUP: fairy lights, star-shaped sandwiches, sparklers, American flag theme, her fav drinks. Arrive by 3pm to get a great spot near the Reflecting Pool. Go ALL OUT — this is your centrepiece date.",
+      cost:"~$60" },
+    { id:"d14", date:"Jul 5", day:"Sun", type:"beach", tag:"🏖️ Beach Day!", emoji:"🏖️",
+      title:"Rehoboth Beach, Delaware — Day Trip!",
+      desc:"A beautiful beach day right after the fireworks! Rehoboth Beach is 2.5 hours from DC — gorgeous sandy shores, the famous Boardwalk, and incredible seafood. 🦀",
+      isSurprise:true,
+      secretNote:"Leave DC by 7am. Pack a surprise beach bag: sunscreen, her fav snacks, a fun beach game, a beach read. Stop at Dogfish Head Brewpub for dinner on the way back — it's literally in Rehoboth.",
+      cost:"~$90" },
+  ]
+},
+{
+  title: "Week 3 · July 7–12", subtitle: "DC Deep Dive + ⛺ Shenandoah Camping!",
+  days: [
+    { id:"d15", date:"Jul 7", day:"Tue", type:"evening", tag:"🌙 Evening", emoji:"😴",
+      title:"Easy Recovery + Cozy Dinner In",
+      desc:"After the big July 4th weekend, a slow evening. Takeout from somewhere amazing, looking back through all your beach and fireworks photos together. 📸",
+      cost:"~$25" },
+    { id:"d16", date:"Jul 8", day:"Wed", type:"evening", tag:"🌙 Evening", emoji:"🌊",
+      title:"Yards Park + Navy Yard Evening Walk",
+      desc:"Modern riverfront park near the Capitol — great for a golden-hour stroll, food trucks, and sometimes free outdoor music. Very local DC energy.",
+      cost:"~$30" },
+    { id:"d17", date:"Jul 9", day:"Thu", type:"musical", tag:"🎭 Evening", emoji:"🎭",
+      title:"National Theatre — Broadway Show Night",
+      desc:"A proper dressed-up date night at one of DC's most beautiful theatres. Dinner at Rasika beforehand. This is a full evening to remember. 🌹",
+      isSurprise:true,
+      secretNote:"Pre-book tickets at NationalTheatre.org — check for July touring Broadway shows. Don't tell her where you're going until you're almost there. Tell her: 'Dress beautifully tonight 🌹'.",
+      cost:"~$130" },
+    { id:"d18", date:"Jul 10", day:"Fri", type:"evening", tag:"🌙 Evening", emoji:"🍽️",
+      title:"Special Friday Date — Tail Up Goat",
+      desc:"One of DC's most celebrated restaurants in Adams Morgan — inventive, playful, and genuinely romantic. Friday evenings here feel extra special.",
+      isSurprise:true,
+      secretNote:"Make the reservation well ahead. Absolutely no phones at dinner. Slip her a small handwritten note at the table.",
+      cost:"~$130" },
+    { id:"d19", date:"Jul 11", day:"Sat", type:"camp", tag:"⛺ Camping!", emoji:"⛺",
+      title:"Shenandoah Overnight — Day 1",
+      desc:"Leave early, drive 1.75 hours to Shenandoah National Park. Hike Dark Hollow Falls in the morning. Set up camp at Big Meadows Campground. Campfire, s'mores, and a sky full of stars. 🌟",
+      isSurprise:true,
+      secretNote:"Bring string lights for the campsite + a surprise card to read by firelight. Book on recreation.gov ASAP — it fills up fast! Big Meadows Campground.",
+      cost:"~$90" },
+    { id:"d20", date:"Jul 12", day:"Sun", type:"camp", tag:"⛺ Camping!", emoji:"🌄",
+      title:"Shenandoah Day 2 — Sunrise + Hike Back",
+      desc:"Wake up for a Blue Ridge sunrise from the Skyline Drive overlook — one of the most beautiful mornings possible. One more hike, then the drive home feeling completely recharged. 🏔️",
+      isSurprise:true,
+      secretNote:"Early morning: make camp coffee and watch the sunrise together in complete silence. She will remember this one forever.",
+      cost:"~$40" },
+  ]
+},
+{
+  title: "Week 4 · July 13–19", subtitle: "DC + ✈️ Grand Marais, Minnesota!",
+  days: [
+    { id:"d21", date:"Jul 13", day:"Mon", type:"evening", tag:"🌙 Evening", emoji:"🖼️",
+      title:"14th Street Gallery Walk",
+      desc:"DC's coolest arts corridor — free galleries, beautiful coffee shops, street murals, and great cocktail bars. A perfect after-work wander.",
+      isSurprise:true,
+      secretNote:"Buy her a small affordable art print as a surprise gift from one of the galleries. Ask which piece she'd hang at home.",
+      cost:"~$40" },
+    { id:"d22", date:"Jul 14", day:"Tue", type:"evening", tag:"🌙 Evening", emoji:"⚾",
+      title:"Washington Nationals Baseball Game",
+      desc:"Nationals Park at 7pm — great summer atmosphere, affordable, and so much fun even if you don't know baseball. Hot dogs and cold drinks included. ⚾",
+      isSurprise:true,
+      secretNote:"Grab her a Nationals cap as a fun souvenir. Cheer loudly even if you have no idea what's happening — she'll love it.",
+      cost:"~$50" },
+    { id:"d23", date:"Jul 15", day:"Wed", type:"evening", tag:"🌙 Evening", emoji:"🍜",
+      title:"H Street NE Food + Bar Crawl",
+      desc:"DC's most lively neighbourhood strip — global food, indie bars, live music, and great energy. Start at Maketto for incredible Cambodian-Taiwanese food.",
+      cost:"~$55" },
+    { id:"d24", date:"Jul 16", day:"Thu", type:"evening", tag:"🌙 Evening", emoji:"🎒",
+      title:"Last DC Evening — Pack for Minnesota!",
+      desc:"Our last cozy evening before the big Minnesota trip. Pack together, cook a simple dinner, and get excited for what's coming! 🗺️",
+      isSurprise:true,
+      secretNote:"Assemble a 'road trip snack bag' as a surprise — her fav travel snacks, a handwritten itinerary, a playlist she doesn't know about. The anticipation is part of the gift.",
+      cost:"~$25" },
+    { id:"d25", date:"Jul 17", day:"Fri", type:"away", tag:"✈️ Away Trip", emoji:"✈️",
+      title:"Grand Marais, MN — Day 1: Arrival",
+      desc:"Off to Grand Marais, Minnesota — a stunning small town on the shore of Lake Superior. Check in, walk the harbor, and breathe the freshest air you've ever tasted. 🌊",
+      cost:"~$150" },
+    { id:"d26", date:"Jul 18", day:"Sat", type:"away", tag:"✈️ Away Trip", emoji:"⛺",
+      title:"Grand Marais — Day 2: Cascade Falls + Lake Camping",
+      desc:"Morning hike at Cascade River State Park (waterfalls + boreal forest). Afternoon kayaking on Lake Superior. Evening campfire on the shore of the greatest freshwater lake in the world. 🌌",
+      isSurprise:true,
+      secretNote:"S'mores by the fire + stargazing — virtually zero light pollution here. The Milky Way is visible. She will LOVE this. Bring the star map app.",
+      cost:"~$70" },
+    { id:"d27", date:"Jul 19", day:"Sun", type:"away", tag:"🎉 Birthday!", emoji:"🎉",
+      title:"Grand Marais — Day 3: Birthday Celebration!",
+      desc:"Celebrating with friends in one of the most beautiful small towns in America! Explore Grand Marais, Artist's Point, local restaurants and the Great Lakes Brew Pub. Sunset on the lake with the whole group. 🥂",
+      isSurprise:true,
+      secretNote:"Organise a group toast by the lake at golden hour. Help the group make it feel really special.",
+      cost:"~$80" },
+  ]
+},
+{
+  title: "Week 5 · July 20–26", subtitle: "Mid-Summer Energy ☀️",
+  days: [
+    { id:"d28", date:"Jul 20", day:"Mon", type:"evening", tag:"🌙 Evening", emoji:"😴",
+      title:"Recovery + Home Dinner",
+      desc:"Return from Minnesota and take a breath. Simple dinner together, going through all our favourite photos from the trip. 📸",
+      isSurprise:true,
+      secretNote:"Print your single favourite photo from MN and put it somewhere she'll discover it — her bedside table, inside a book she's reading.",
+      cost:"~$25" },
+    { id:"d29", date:"Jul 21", day:"Tue", type:"camp", tag:"🌙 Evening", emoji:"🌿",
+      title:"Theodore Roosevelt Island",
+      desc:"A car-free island sanctuary in the middle of the Potomac — only accessible by footbridge, completely wild and peaceful. Open until sunset.",
+      cost:"~$10" },
+    { id:"d30", date:"Jul 22", day:"Wed", type:"musical", tag:"🎭 Evening", emoji:"🎭",
+      title:"Kennedy Center — Musical or Concert",
+      desc:"An evening at the Kennedy Center — one of the world's great performing arts venues, right here in DC. Dinner at Rasika West End beforehand. The full experience.",
+      isSurprise:true,
+      secretNote:"Let HER pick which show she wants to see, then you buy the tickets without her knowing the seats. Dinner at Rasika West End (5 min walk) beforehand. Make it a proper evening.",
+      cost:"~$110" },
+    { id:"d31", date:"Jul 23", day:"Thu", type:"evening", tag:"🌙 Evening", emoji:"🌮",
+      title:"International Food Night — Her Choice",
+      desc:"DC's global food scene is incredible — Ethiopian on U Street, Korean BBQ, Vietnamese, Peruvian, you name it. Tonight she picks the cuisine.",
+      cost:"~$55" },
+    { id:"d32", date:"Jul 24", day:"Fri", type:"camp", tag:"🌙 Evening", emoji:"🌙",
+      title:"Stargazing Night Drive",
+      desc:"Drive 45 minutes out of DC toward the Shenandoah foothills where the city lights disappear. Just the two of you under the stars. 🌠",
+      isSurprise:true,
+      secretNote:"Bring hot chocolate or her favourite warm drink and a blanket. Download a star map app beforehand. This is quiet, romantic, and completely free of the city noise.",
+      cost:"~$20" },
+    { id:"d33", date:"Jul 25", day:"Sat", type:"weekend", tag:"☀️ Full Day", emoji:"🌊",
+      title:"Great Falls Park + Surprise Picnic",
+      desc:"Stunning waterfalls just 14 miles from DC — powerful Potomac rapids and trails that feel like true wilderness. One of DC's best day hikes.",
+      isSurprise:true,
+      secretNote:"Pack a full surprise picnic with all her favourite foods, waiting in the backpack. Reveal it at a beautiful overlook along the River Trail.",
+      cost:"~$35" },
+    { id:"d34", date:"Jul 26", day:"Sun", type:"weekend", tag:"☀️ Full Day", emoji:"🌺",
+      title:"Kenilworth Aquatic Gardens + Dupont Circle",
+      desc:"DC's best-kept secret — the only national park with blooming lotus flowers and water lilies! Peak bloom is July. Then a lazy afternoon in Dupont Circle's café and bookshop scene.",
+      isSurprise:true,
+      secretNote:"Buy her fresh flowers from the Dupont Farmers Market. This morning visit is genuinely stunning — go before 10am before crowds arrive.",
+      cost:"~$25" },
+  ]
+},
+{
+  title: "Week 6 · July 27 – August 2", subtitle: "DC + 🎂 Wisconsin Birthday!",
+  days: [
+    { id:"d35", date:"Jul 27", day:"Mon", type:"camp", tag:"🌙 Evening", emoji:"🌅",
+      title:"Sunrise Walk — Lincoln Memorial",
+      desc:"The most magical spot in all of DC at 5:30am — almost no one there, golden light over the Reflecting Pool. One of those 'I can't believe this is my life' mornings. ☀️",
+      isSurprise:true,
+      secretNote:"Bring coffee in a thermos. Set an alarm together. Sit on the steps in silence and just soak it in. She will not forget this.",
+      cost:"~$5" },
+    { id:"d36", date:"Jul 28", day:"Tue", type:"musical", tag:"🎭 Evening", emoji:"🎭",
+      title:"Shakespeare Theatre — Evening Show",
+      desc:"DC's world-class Shakespeare Theatre company puts on incredible productions. Dramatic, beautiful, completely worth dressing up for.",
+      isSurprise:true,
+      secretNote:"Pre-book tickets as a surprise. If Shakespeare isn't showing, check Arena Stage or the Lincoln Theatre.",
+      cost:"~$85" },
+    { id:"d37", date:"Jul 29", day:"Wed", type:"evening", tag:"🌙 Evening", emoji:"🍝",
+      title:"Couples Cooking Class — Big Surprise!",
+      desc:"An evening cooking class together — pasta, sushi, or baking. Hands-on, fun, and something we'll reference for years to come. 👨‍🍳👩‍🍳",
+      isSurprise:true,
+      secretNote:"Book at least 2 weeks in advance. Keep it completely secret: tell her 'I need you free Wednesday evening — and hungry 😋'. The reveal is everything.",
+      cost:"~$110" },
+    { id:"d38", date:"Jul 30", day:"Thu", type:"camp", tag:"🌙 Evening", emoji:"🚴",
+      title:"Evening Bike Ride — C&O Canal Towpath",
+      desc:"Rent bikes and ride the historic C&O Canal towpath at golden hour — flat, peaceful, and scenic. One of the loveliest things you can do in DC.",
+      isSurprise:true,
+      secretNote:"Pack sparkling lemonade for a surprise 'pit stop' along the canal. Make it feel spontaneous.",
+      cost:"~$25" },
+    { id:"d39", date:"Jul 31", day:"Fri", type:"evening", tag:"🌙 Evening", emoji:"🍽️",
+      title:"End of July Celebration Dinner",
+      desc:"A proper send-off to the month of July — great restaurant, great food, great conversation. Here's to the best month.",
+      isSurprise:true,
+      secretNote:"Try Maydan (Middle Eastern, wood-fire kitchen, incredible atmosphere) or Compass Rose. Over dinner, share your favourite memory from each of the first 5 weeks.",
+      cost:"~$80" },
+    { id:"d40", date:"Aug 1", day:"Sat", type:"away", tag:"✈️ Away Trip", emoji:"🎂",
+      title:"Wisconsin — Birthday Celebration Day 1!",
+      desc:"Off to Wisconsin for a birthday celebration with friends! Exploring a new city together, great food, beautiful lakes, and good company. 🥂",
+      cost:"~$130" },
+    { id:"d41", date:"Aug 2", day:"Sun", type:"away", tag:"✈️ Away Trip", emoji:"🎉",
+      title:"Wisconsin — Birthday Day 2 + Return Home",
+      desc:"Full day of celebrations, then the road back to DC. If near a lake, a morning swim before leaving.",
+      isSurprise:true,
+      secretNote:"Carve out 20 quiet minutes from the group just for the two of you — a walk, a coffee. She'll feel it. In group trips, those private moments matter most.",
+      cost:"~$80" },
+  ]
+},
+{
+  title: "Week 7 · August 3–9", subtitle: "DC + 🗽 New York City + Broadway!",
+  days: [
+    { id:"d42", date:"Aug 3", day:"Mon", type:"evening", tag:"🌙 Evening", emoji:"😴",
+      title:"Recovery + National Cathedral Walk",
+      desc:"Back from Wisconsin — easy evening. A gentle walk to the National Cathedral's Bishop's Garden, then home for dinner. The garden is genuinely beautiful and always calm.",
+      cost:"~$20" },
+    { id:"d43", date:"Aug 4", day:"Tue", type:"evening", tag:"🌙 Evening", emoji:"🎨",
+      title:"Hirshhorn Museum + Sculpture Garden",
+      desc:"DC's modern art museum — free, bold, and fascinating. The outdoor sculpture garden is especially beautiful in summer evenings.",
+      cost:"~$10" },
+    { id:"d44", date:"Aug 5", day:"Wed", type:"evening", tag:"💌 Surprise", emoji:"💅",
+      title:"Something Special Planned Tonight 🌟",
+      desc:"Ashish has a surprise evening planned just for her. All she has to do is show up. ✨",
+      isSurprise:true,
+      secretNote:"SOLO SPA SURPRISE. Book her a massage or facial in advance. Leave a note that morning: 'You have an appointment at [Spa Name] at 6:30pm. You deserve this. 🌹'. Cook or order dinner for when she gets home. Have flowers on the table when she returns.",
+      cost:"~$110" },
+    { id:"d45", date:"Aug 6", day:"Thu", type:"evening", tag:"🌙 Evening", emoji:"🌿",
+      title:"Yards Park + Food Trucks + River Walk",
+      desc:"A lovely last DC Thursday — Anacostia Riverfront walk, food trucks at Yards Park, and maybe an outdoor concert. Savouring the city before our NYC escape.",
+      cost:"~$30" },
+    { id:"d46", date:"Aug 7", day:"Fri", type:"nyc", tag:"🗽 NYC!", emoji:"🗽",
+      title:"NEW YORK CITY — We're Going to NYC!",
+      desc:"Amtrak from DC Union Station — 2.5 hours and we're in Manhattan. Late-night NYC pizza, Times Square, and the energy of the city that never sleeps. 🌃",
+      isSurprise:true,
+      secretNote:"Take the 6pm Amtrak after work (no PTO needed). Book early for ~$60–80 each way. Check into the hotel. Walk Times Square at night — let her feel the city.",
+      cost:"~$180" },
+    { id:"d47", date:"Aug 8", day:"Sat", type:"nyc", tag:"🎭 BROADWAY!", emoji:"🎭",
+      title:"BROADWAY SHOW + Full NYC Day! 🗽",
+      desc:"Morning on the High Line and Chelsea Market. Afternoon in Central Park and Times Square. Then... BROADWAY. The real thing, in New York City, together. This is the one. 🌟",
+      isSurprise:true,
+      secretNote:"THE BIG ONE. Ask her once which show she's always dreamed of seeing — book THAT show. Don't reveal it until you hand her the tickets at the theatre entrance. Telecharge.com or TodayTix — book 4–6 weeks ahead. She. Will. Cry. Good tears.",
+      cost:"~$200" },
+    { id:"d48", date:"Aug 9", day:"Sun", type:"nyc", tag:"🗽 NYC", emoji:"🌅",
+      title:"NYC Morning + Return to DC",
+      desc:"Morning bagels and coffee, a walk across the Brooklyn Bridge or through the Village, then the Amtrak home. Arriving back in DC feels different after NYC — in a good way.",
+      isSurprise:true,
+      secretNote:"Buy her one meaningful NYC memento — a book from The Strand, a print from a street artist, something small and real.",
+      cost:"~$100" },
+  ]
+},
+{
+  title: "Week 8 · August 10–16", subtitle: "Our Final Week Together 💔→💖",
+  days: [
+    { id:"d49", date:"Aug 10", day:"Mon", type:"evening", tag:"🌙 Evening", emoji:"📸",
+      title:"Summer Photos + Memory Night",
+      desc:"Looking through all our summer photos together — DC, the beach, Minnesota, Wisconsin, NYC. A whole season in pictures. 💕",
+      isSurprise:true,
+      secretNote:"ORDER THE PHOTO BOOK TONIGHT (Artifact Uprising or Shutterfly — allow 7 days delivery). Play music from each trip while scrolling through photos. Make her laugh, then make her cry.",
+      cost:"~$60" },
+    { id:"d50", date:"Aug 11", day:"Tue", type:"evening", tag:"💌 Memories", emoji:"📷",
+      title:"Recreate Our Week-1 Photos",
+      desc:"Revisiting 2–3 of our first spots from her arrival week and taking the same photos — side-by-side before/after. This is who we were. This is who we became. 💖",
+      cost:"~$15" },
+    { id:"d51", date:"Aug 12", day:"Wed", type:"evening", tag:"🌙 Evening", emoji:"🛍️",
+      title:"Georgetown Souvenir Hunt",
+      desc:"Walking Georgetown boutiques and bookshops for keepsakes from each adventure — a DC print, a Great Lakes piece, a Broadway poster, a Wisconsin memento. One for each journey.",
+      cost:"~$60" },
+    { id:"d52", date:"Aug 13", day:"Thu", type:"musical", tag:"🎭 Evening", emoji:"🎭",
+      title:"Final Musical Night — The Big One",
+      desc:"The last big night out. Best show available this week — dressed up, great dinner beforehand, front-section seats. Making the final Thursday unforgettable.",
+      isSurprise:true,
+      secretNote:"Book the best show available. Make it a full date: her favourite outfit, dinner at her favourite restaurant from the summer, the best seats you can afford. The dinner toast is about what the summer meant.",
+      cost:"~$140" },
+    { id:"d53", date:"Aug 14", day:"Fri", type:"evening", tag:"💌 Special", emoji:"🍽️",
+      title:"Recreate Our Very First Dinner",
+      desc:"Going back to the first restaurant from her arrival week. Same table if possible. A toast to everything we did, everywhere we went, every moment we shared. 🥂",
+      isSurprise:true,
+      secretNote:"GIVE HER THE PHOTO BOOK at dinner. Tissues will be required. Tell her one favourite memory from each of the 8 weeks. 💖",
+      cost:"~$85" },
+    { id:"d54", date:"Aug 15", day:"Sat", type:"weekend", tag:"☀️ Her Day", emoji:"💖",
+      title:"Her Perfect Last Day — She Chooses Everything",
+      desc:"Today is entirely hers. Whatever she wants to do, eat, see, or revisit — we do it. Surprise breakfast in bed in the morning, her favourite spot at sunset. No schedule. Just us.",
+      isSurprise:true,
+      secretNote:"Write her the goodbye letter tonight, sealed for tomorrow. Make this the most intentional day of the whole summer.",
+      cost:"~$80" },
+    { id:"d55", date:"Aug 16", day:"Sun", type:"arrival", tag:"✈️ Goodbye", emoji:"💌",
+      title:"She Flies Home — Make It Beautiful, Not Sad",
+      desc:"Slow morning. Big breakfast. One last walk to her favourite DC spot. A warm send-off at the airport — hold her tight and don't let go too quickly. Until next time. 💖",
+      isSurprise:true,
+      secretNote:"Slip a sealed love letter into her bag before you leave for the airport. She opens it on the plane. Talk about your favourite memories, what she means to you, and what comes next. Make it count. This is what she carries home.",
+      cost:"~$20" },
+  ]
+}
+];
+
+const trips = [
+  { type:"beach",
+    when:"Sunday, July 5", icon:"🏖️",
+    title:"Rehoboth Beach, Delaware",
+    subtitle:"Beach Day Trip — 2.5 hrs from DC",
+    items:[
+      {i:"🚗",t:"Leave DC by 7am — arrive by 9:30am"},
+      {i:"🏄",t:"Full day at one of the East Coast's most beautiful beaches — gorgeous sand and a classic Boardwalk"},
+      {i:"🦀",t:"Lunch: fresh seafood right on the Boardwalk"},
+      {i:"🍺",t:"Dinner at Dogfish Head Brewpub — legendary craft beer, and it's literally IN Rehoboth"},
+      {i:"🌅",t:"Drive home, back in DC by 9pm"},
+    ], cost:"~$90 per couple (gas + food)" },
+  { type:"mn",
+    when:"July 17–19 (Fri–Sun)", icon:"⛺",
+    title:"Grand Marais, Minnesota",
+    subtitle:"Lake Superior + Birthday Celebration!",
+    items:[
+      {i:"✈️",t:"Fly into Duluth, MN — rent a car. Grand Marais is 1.5 hrs NE of Duluth on Lake Superior"},
+      {i:"🌊",t:"Cascade River State Park: stunning waterfalls + boreal forest hiking"},
+      {i:"🛶",t:"Kayaking on Lake Superior — a freshwater sea"},
+      {i:"🌌",t:"Campfire on the Lake Superior shore + stargazing (virtually no light pollution — Milky Way visible!)"},
+      {i:"🎉",t:"Day 3: Birthday celebration with friends in this magical small town"},
+    ], cost:"~$400–600 per couple" },
+  { type:"wi",
+    when:"August 1–2 (Sat–Sun)", icon:"🎂",
+    title:"Wisconsin",
+    subtitle:"Birthday Celebration Weekend",
+    items:[
+      {i:"✈️",t:"Fly or drive — Milwaukee or Madison are common hubs"},
+      {i:"🎉",t:"Full birthday celebration with friends"},
+      {i:"🏊",t:"Wisconsin's beautiful lakes — swimming or kayaking if near the lake region"},
+      {i:"🧀",t:"Embrace the Wisconsin classics: cheese curds, Friday fish fry, craft beer"},
+      {i:"💕",t:"Carve out private time just for the two of you among the group energy"},
+    ], cost:"~$250–400 per couple" },
+  { type:"nyc",
+    when:"August 7–9 (Fri–Sun)", icon:"🗽",
+    title:"New York City + BROADWAY",
+    subtitle:"The Big One — Broadway Show! 🎭",
+    items:[
+      {i:"🚂",t:"Amtrak from DC Union Station — 2.5 hrs, book ahead for ~$60–80 each way"},
+      {i:"🌃",t:"Fri night: Times Square, late-night NYC slice, walk Manhattan"},
+      {i:"🌿",t:"Sat morning: High Line + Chelsea Market breakfast + Central Park"},
+      {i:"🎭",t:"Saturday evening: BROADWAY SHOW — the whole reason for this trip!"},
+      {i:"🥯",t:"Sun morning: Brooklyn bagels + Bridge walk, Amtrak home by noon"},
+    ], cost:"~$500–700 per couple (Amtrak + hotel + show + food)" },
+];
+
+const eats = [
+  { section:"🌟 Special Night Out", items:[
+    {n:"Rasika",c:"Modern Indian · Penn Quarter",w:"James Beard award-winning. The palak chaat alone is worth it. Book 2+ weeks ahead.",p:"$$$"},
+    {n:"Tail Up Goat",c:"Creative American · Adams Morgan",w:"Inventive, romantic, the best cocktails in DC. Perfect for a special splurge.",p:"$$$"},
+    {n:"The Dabney",c:"Mid-Atlantic · Shaw",w:"Farm-to-table, cozy, fireplace. Deeply romantic. Very DC.",p:"$$$"},
+    {n:"Bresca",c:"French Modern · 14th St NW",w:"Stunning plating, intimate setting. One of DC's most acclaimed restaurants.",p:"$$$$"},
+  ]},
+  { section:"💕 Romantic Vibes", items:[
+    {n:"Compass Rose",c:"Global Street Food · 14th St NW",w:"Cozy, world-travels themed, amazing khachapuri and perfect cocktails.",p:"$$"},
+    {n:"Filomena",c:"Italian · Georgetown",w:"Old-school Georgetown Italian — romantic atmosphere and great pasta.",p:"$$$"},
+    {n:"Old Ebbitt Grill",c:"Classic American · Downtown",w:"Historic Victorian décor, great raw bar, perfect for a DC Sunday brunch date.",p:"$$"},
+  ]},
+  { section:"🎉 Fun & Lively", items:[
+    {n:"Jaleo",c:"Spanish Tapas · Penn Quarter",w:"José Andrés' flagship — incredible tapas, sangria, and the best energy.",p:"$$"},
+    {n:"Maketto",c:"Cambodian-Taiwanese · H Street NE",w:"Trendy, multicultural, great for an H Street corridor night out.",p:"$$"},
+    {n:"China Chilcano",c:"Peruvian-Japanese · Penn Quarter",w:"Unique fusion, amazing cocktails, very cool space.",p:"$$"},
+  ]},
+  { section:"🍔 Casual & Local", items:[
+    {n:"Ben's Chili Bowl",c:"American Classic · U Street",w:"DC institution since 1958. The chili half-smoke is a must-try.",p:"$"},
+    {n:"Founding Farmers",c:"Farm-to-Table · Foggy Bottom",w:"Great brunch, huge portions. Also conveniently near Kennedy Center!",p:"$$"},
+    {n:"Call Your Mother Deli",c:"Jewish Deli · Capitol Hill",w:"DC's most beloved deli — incredible bagels. Perfect solo lunch spot.",p:"$"},
+  ]},
+  { section:"🌍 Global Flavours", items:[
+    {n:"Maydan",c:"Middle Eastern · 14th St NW",w:"Dramatic wood-fire open kitchen. Bold North African and Levantine flavors. Unmissable.",p:"$$"},
+    {n:"Doi Moi",c:"Southeast Asian · 14th St NW",w:"Thai and Vietnamese inspired, great cocktails, always a great time.",p:"$$"},
+    {n:"Rasika West End",c:"Modern Indian · West End",w:"Sister to Rasika, steps from Kennedy Center — perfect pre-show dinner.",p:"$$$"},
+  ]},
+];
+
+// ─── RENDER PLAN ──────────────────────────────────────────────
+function renderPlan() {
+  const container = document.getElementById("planContainer");
+  weeks.forEach(week => {
+    const block = document.createElement("div");
+    block.className = "week-block";
+
+    const title = document.createElement("div");
+    title.className = "week-title";
+    title.innerHTML = `${week.title} <span class="badge">${week.subtitle}</span>`;
+    block.appendChild(title);
+
+    week.days.forEach(d => {
+      const saved = localStorage.getItem("check_" + d.id) === "1";
+      const card = document.createElement("div");
+      card.className = `day-card type-${d.type}${saved ? " completed" : ""}`;
+      card.id = "card_" + d.id;
+
+      const [mon, num] = d.date.split(" ");
+      card.innerHTML = `
+        <div class="date-col">
+          <div class="day-name">${d.day}</div>
+          <div class="day-num">${num}</div>
+          <div class="month-name">${mon}</div>
+        </div>
+        <div class="card-body">
+          <div class="card-top">
+            <span class="type-tag tag-${d.type}">${d.tag}</span>
+          </div>
+          <div class="card-title">${d.emoji} ${d.title}</div>
+          <div class="card-desc">${d.desc}</div>
+          ${d.isSurprise ? `<div class="surprise-blur">✨ Ashish has something magical planned... 🔒</div>` : ""}
+          ${d.secretNote ? `<div class="secret-note">${d.secretNote}</div>` : ""}
+          <div class="card-footer">
+            <span class="cost-badge">💰 ${d.cost}</span>
+            <button class="check-btn ${saved ? "checked" : ""}" id="chk_${d.id}" onclick="toggleCheck('${d.id}')" title="Mark as done!">✓</button>
+          </div>
+        </div>`;
+      block.appendChild(card);
+    });
+    container.appendChild(block);
+  });
+}
+
+// ─── RENDER TRIPS ─────────────────────────────────────────────
+function renderTrips() {
+  const container = document.getElementById("tripsContainer");
+  trips.forEach(t => {
+    const card = document.createElement("div");
+    card.className = "trip-card";
+    card.innerHTML = `
+      <div class="trip-header ${t.type}">
+        <div class="trip-when">${t.when}</div>
+        <div class="trip-title-text">${t.icon} ${t.title}</div>
+        <div style="font-size:0.82rem;font-weight:600;color:#374151;margin-top:0.2rem">${t.subtitle}</div>
+      </div>
+      <div class="trip-body">
+        ${t.items.map(i=>`<div class="trip-row"><div class="trip-icon">${i.i}</div><div class="trip-row-text">${i.t}</div></div>`).join("")}
+        <div><span class="trip-cost">💰 ${t.cost}</span></div>
+      </div>`;
+    container.appendChild(card);
+  });
+}
+
+// ─── RENDER EATS ──────────────────────────────────────────────
+function renderEats() {
+  const container = document.getElementById("eatsContainer");
+  eats.forEach(sec => {
+    const wrap = document.createElement("div");
+    wrap.className = "resto-section";
+    wrap.innerHTML = `<div class="resto-section-title">${sec.section}</div>`;
+    const grid = document.createElement("div");
+    grid.className = "resto-grid";
+    sec.items.forEach(r => {
+      const card = document.createElement("div");
+      card.className = "resto-card";
+      card.innerHTML = `
+        <div class="resto-name">${r.n}</div>
+        <div class="resto-type">${r.c}</div>
+        <div class="resto-why">${r.w}</div>
+        <div class="resto-price">${r.p}</div>`;
+      grid.appendChild(card);
+    });
+    wrap.appendChild(grid);
+    container.appendChild(wrap);
+  });
+}
+
+// ─── PROGRESS ─────────────────────────────────────────────────
+function updateProgress() {
+  const allDays = weeks.flatMap(w => w.days);
+  const total   = allDays.length;
+  const done    = allDays.filter(d => localStorage.getItem("check_"+d.id)==="1").length;
+  const pct     = total ? Math.round(done / total * 100) : 0;
+  document.getElementById("progressPct").textContent  = pct + "%";
+  document.getElementById("progressBar").style.width  = pct + "%";
+
+  const msgs = [
+    "Check off dates as you experience them together! 💕",
+    "The adventure is just beginning! 🌟",
+    "You're on your way — keep making memories! 💖",
+    "Halfway through the most amazing summer! ✨",
+    "Almost there — every moment counts! 🥹",
+    "What an incredible summer you've had together! 💖🎉"
+  ];
+  const idx = Math.floor(pct / 20);
+  document.getElementById("progressNote").textContent = msgs[Math.min(idx, msgs.length-1)];
+
+  // Stats
+  document.getElementById("progressGrid").innerHTML = `
+    <div class="prog-card"><div class="prog-card-num">${done}</div><div class="prog-card-label">Dates Done</div></div>
+    <div class="prog-card"><div class="prog-card-num">${total-done}</div><div class="prog-card-label">Still Ahead</div></div>
+    <div class="prog-card"><div class="prog-card-num">4</div><div class="prog-card-label">Trips Planned</div></div>
+    <div class="prog-card"><div class="prog-card-num">56</div><div class="prog-card-label">Days Together</div></div>`;
+
+  // Stats bar
+  document.getElementById("statsBar").innerHTML = [
+    `<div class="stat-pill">📅 56 days together</div>`,
+    `<div class="stat-pill">✈️ 4 trips planned</div>`,
+    `<div class="stat-pill">🎭 Musical nights every week</div>`,
+    `<div class="stat-pill">⛺ Shenandoah camping</div>`,
+    `<div class="stat-pill">🗽 NYC + Broadway</div>`,
+    `<div class="stat-pill">💚 ${done}/${total} dates done</div>`,
+  ].join("");
+
+  // Track tab list
+  renderTrackList(allDays, done, total);
+}
+
+function renderTrackList(allDays, done, total) {
+  const container = document.getElementById("trackList");
+  container.innerHTML = `<div class="section-title">✅ All Dates Checklist</div>`;
+  weeks.forEach(week => {
+    const header = document.createElement("div");
+    header.style.cssText = "font-weight:800;color:var(--deep);margin:1rem 0 0.5rem;font-size:0.9rem;";
+    header.textContent = week.title;
+    container.appendChild(header);
+    week.days.forEach(d => {
+      const saved = localStorage.getItem("check_"+d.id)==="1";
+      const row = document.createElement("div");
+      row.style.cssText = "display:flex;align-items:center;gap:0.6rem;padding:0.4rem 0.6rem;border-radius:0.5rem;margin-bottom:0.3rem;background:white;border:1px solid #FCE7F3;font-size:0.82rem;";
+      if(saved) row.style.opacity="0.6";
+      row.innerHTML = `
+        <button class="check-btn ${saved?"checked":""}" onclick="toggleCheck('${d.id}')" style="width:24px;height:24px;font-size:0.8rem;flex-shrink:0;">✓</button>
+        <span style="font-weight:700;color:var(--gray);min-width:60px;">${d.day} ${d.date}</span>
+        <span style="flex:1;${saved?"text-decoration:line-through;color:var(--gray)":""}">${d.emoji} ${d.title}</span>`;
+      container.appendChild(row);
+    });
+  });
+}
+
+// ─── TOGGLE CHECK ─────────────────────────────────────────────
+function toggleCheck(id) {
+  const current = localStorage.getItem("check_"+id)==="1";
+  localStorage.setItem("check_"+id, current ? "0" : "1");
+  const card = document.getElementById("card_"+id);
+  if(card) card.classList.toggle("completed", !current);
+  const btn = document.getElementById("chk_"+id);
+  if(btn) btn.classList.toggle("checked", !current);
+  updateProgress();
+}
+
+// ─── COUNTDOWN ────────────────────────────────────────────────
+function updateCountdown() {
+  const now  = new Date();
+  const diff = ARRIVAL - now;
+
+  if(diff <= 0 && now <= DEPARTURE) {
+    const dayIn = Math.floor((now - ARRIVAL) / 86400000) + 1;
+    document.getElementById("countdownBox").innerHTML =
+      `<div style="font-size:1.1rem;font-weight:800;color:var(--rose)">🎉 She's here! Day ${dayIn} of 56! 💖</div>`;
+    return;
+  }
+  if(now > DEPARTURE) {
+    document.getElementById("countdownBox").innerHTML =
+      `<div style="font-size:1rem;font-weight:800;color:var(--rose)">💖 What an incredible summer together! 🌟</div>`;
+    return;
+  }
+
+  const days  = Math.floor(diff / 86400000);
+  const hours = Math.floor((diff % 86400000) / 3600000);
+  const mins  = Math.floor((diff % 3600000)  / 60000);
+  const secs  = Math.floor((diff % 60000)    / 1000);
+
+  document.getElementById("cd-days").textContent  = String(days).padStart(2,"0");
+  document.getElementById("cd-hours").textContent = String(hours).padStart(2,"0");
+  document.getElementById("cd-mins").textContent  = String(mins).padStart(2,"0");
+}
+
+// ─── TABS ─────────────────────────────────────────────────────
+function switchTab(tab, btn) {
+  document.querySelectorAll(".tab-panel").forEach(p=>p.classList.remove("active"));
+  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+  document.getElementById("tab-"+tab).classList.add("active");
+  btn.classList.add("active");
+  if(tab==="track") updateProgress();
+}
+
+// ─── SECRET VIEW ──────────────────────────────────────────────
+function openSecretModal() {
+  if(document.body.classList.contains("secret-mode")) {
+    document.body.classList.remove("secret-mode");
+    document.getElementById("secret-btn").innerHTML = "🔒";
+    return;
+  }
+  document.getElementById("secretModal").classList.add("open");
+  setTimeout(()=>document.getElementById("secretInput").focus(),300);
+}
+function closeModal() {
+  document.getElementById("secretModal").classList.remove("open");
+  document.getElementById("secretInput").value = "";
+  document.getElementById("secretInput").classList.remove("error");
+}
+function checkSecret() {
+  const val = document.getElementById("secretInput").value.trim();
+  if(val === SECRET_PWD) {
+    document.body.classList.add("secret-mode");
+    document.getElementById("secret-btn").innerHTML = "🔓";
+    closeModal();
+  } else {
+    const input = document.getElementById("secretInput");
+    input.classList.add("error");
+    input.value = "";
+    setTimeout(()=>input.classList.remove("error"), 400);
+  }
+}
+document.getElementById("secretModal").addEventListener("click", e => {
+  if(e.target === e.currentTarget) closeModal();
+});
+
+// ─── FLOATING HEARTS ──────────────────────────────────────────
+function spawnHearts() {
+  const container = document.getElementById("heartsContainer");
+  const emojis = ["💖","💕","🌸","✨","💗","🌷","💝","⭐","🌟","💞"];
+  for(let i=0; i<18; i++) {
+    const h = document.createElement("div");
+    h.className = "heart-float";
+    h.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    h.style.left = Math.random()*100 + "%";
+    h.style.animationDuration = (12 + Math.random()*18) + "s";
+    h.style.animationDelay    = (Math.random()*20) + "s";
+    h.style.fontSize          = (0.9 + Math.random()*1.2) + "rem";
+    container.appendChild(h);
+  }
+}
+
+// ─── INIT ─────────────────────────────────────────────────────
+spawnHearts();
+renderPlan();
+renderTrips();
+renderEats();
+updateProgress();
+updateCountdown();
+setInterval(updateCountdown, 1000);
+
+// Close modal on Escape
+document.addEventListener("keydown", e => { if(e.key==="Escape") closeModal(); });
+</script>
+</body>
+</html>
