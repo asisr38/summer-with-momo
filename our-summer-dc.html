@@ -671,6 +671,12 @@ const weeks = [
       isSurprise:true,
       secretNote:"Leave DC by 7am. Pack a surprise beach bag: sunscreen, her fav snacks, a fun beach game, a beach read. Stop at Dogfish Head Brewpub for dinner on the way back — it's literally in Rehoboth.",
       cost:"~$90" },
+    { id:"d14b", date:"Jul 6", day:"Mon", type:"weekend", tag:"🛍️ Shopping", emoji:"🛍️",
+      title:"Tysons Corner — Shopping Date Day!",
+      desc:"Home turf! Tysons Corner Center and Tysons Galleria are right in our backyard — 300 stores across two malls. Explore Nordstrom, Bloomingdale's, Aritzia, Zara, and Sephora at Tysons I, then walk over to the Galleria for the luxury side. A full day of browsing, trying things on, and great food between stops. 🛍️✨",
+      isSurprise:true,
+      secretNote:"Tell her you're taking her shopping — but keep the Level99 entertainment surprise (40,000 sq ft of 50+ physical + mental challenges at Tysons Corner Center) for mid-afternoon. End the day with dinner at Agora in Tysons (Turkish-Mediterranean, mosaic lanterns — very romantic). She'll love this day.",
+      cost:"~$100–150 (dinner + fun + whatever she picks 😄)" },
   ]
 },
 {
@@ -994,6 +1000,13 @@ const eats = [
     {n:"Doi Moi",c:"Southeast Asian · 14th St NW",w:"Thai and Vietnamese inspired, great cocktails, always a great time.",p:"$$"},
     {n:"Rasika West End",c:"Modern Indian · West End",w:"Sister to Rasika, steps from Kennedy Center — perfect pre-show dinner.",p:"$$$"},
   ]},
+  { section:"🗺️ Northern Virginia & Tysons", items:[
+    {n:"Agora",c:"Turkish-Mediterranean · Tysons",w:"Mosaic lanterns, rich mezze, and an Ottoman-inspired menu. One of the most romantic atmospheres in all of NoVA — great for a special date night close to home.",p:"$$$"},
+    {n:"The Naisho Room",c:"Speakeasy · Watermark Hotel, Tysons",w:"Hidden, reservation-only speakeasy inside The Watermark Hotel. Tokyo-inspired cocktails, low lighting, very exclusive. A perfect surprise — she won't know where you're taking her until you walk in.",p:"$$$"},
+    {n:"Modan",c:"Modern Japanese · Tysons",w:"Sleek Japanese restaurant in a luxury Tysons high-rise — dry-aged fish, king salmon carpaccio with truffle aioli, and polished service. Great for a special night.",p:"$$$"},
+    {n:"The Palm",c:"Classic Steakhouse · Tysons Corner",w:"The iconic American steakhouse. White tablecloths, exceptional service, and food that never disappoints. A proper date-night classic right at Tysons.",p:"$$$$"},
+    {n:"Founding Farmers",c:"Farm-to-Table · Fairfax",w:"A Fairfax staple — great brunch, huge portions, local and sustainable. Perfect for a slow Sunday morning close to home before heading into DC.",p:"$$"},
+  ]},
   { section:"☕ Cafes & Bakeries", items:[
     {n:"Tatte Bakery & Café",c:"Café & Bakery · Dupont / Georgetown / City Center",w:"Israeli-inspired pastries with stunning interiors — perfect for a slow Saturday morning. Multiple DC locations. The tahini croissant and shakshuka are both incredible.",p:"$"},
     {n:"Baked & Wired",c:"Bakery & Coffee · Georgetown",w:"DC's most beloved cupcake shop — giant, creative flavours and great coffee. A Georgetown must. Get there early before they sell out of the best ones.",p:"$"},
@@ -1123,6 +1136,7 @@ function updateProgress() {
   document.getElementById("statsBar").innerHTML = [
     `<div class="stat-pill">📅 56 days together</div>`,
     `<div class="stat-pill">✈️ 4 trips planned</div>`,
+    `<div class="stat-pill">🛍️ Tysons shopping day</div>`,
     `<div class="stat-pill">🎭 Musical nights every week</div>`,
     `<div class="stat-pill">⛺ Shenandoah camping</div>`,
     `<div class="stat-pill">🗽 NYC + Broadway</div>`,
