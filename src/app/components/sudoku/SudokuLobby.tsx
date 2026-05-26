@@ -7,7 +7,7 @@ type Identity = "ashish" | "momo";
 
 type Props = {
   supabaseReady: boolean;
-  onEnterSolo: () => void;
+  onEnterSolo: (difficulty: Difficulty) => void;
   onCreateRoom: (me: Identity, difficulty: Difficulty) => void;
   onJoinRoom: (code: string, me: Identity) => void;
 };
@@ -102,7 +102,7 @@ export function SudokuLobby({ supabaseReady, onEnterSolo, onCreateRoom, onJoinRo
           <button className="btn-primary" onClick={handleCreate} disabled={!supabaseReady || creating} type="button">
             {creating ? "Opening room…" : "Open a room"}
           </button>
-          <button className="btn-ghost" onClick={onEnterSolo} type="button">
+          <button className="btn-ghost" onClick={() => onEnterSolo(difficulty)} type="button">
             Play solo
           </button>
         </div>

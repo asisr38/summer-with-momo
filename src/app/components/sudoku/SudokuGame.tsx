@@ -1,7 +1,16 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { cloneBoard, getConflicts, parseBoard, serializeValues, solve } from "@/lib/sudoku/engine";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  applyHint,
+  cloneBoard,
+  findHintCell,
+  getConflicts,
+  parseBoard,
+  revealBoard,
+  serializeValues,
+  solve
+} from "@/lib/sudoku/engine";
 import { PUZZLES, randomPuzzle } from "@/lib/sudoku/puzzles";
 import type { Board, CellCoord, Cell as SuCell, Difficulty, Puzzle } from "@/lib/sudoku/types";
 import { isSupabaseReady } from "@/lib/supabase/client";
@@ -72,13 +81,14 @@ export function SudokuGame() {
     }
     return { kind: "lobby" };
   });
-  const [difficulty, setDifficulty] = useState<Difficulty>("easy");
   const [state, setState] = useState<GameState | null>(null);
   const [selected, setSelected] = useState<CellCoord | null>({ row: 0, col: 0 });
   const [pencilMode, setPencilMode] = useState(false);
   const [startTime, setStartTime] = useState(() => Date.now());
   const [now, setNow] = useState(() => Date.now());
   const [won, setWon] = useState(false);
+  const [revealArmed, setRevealArmed] = useState(false);
+  const revealTimer = useRef<number | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -86,6 +96,7 @@ export function SudokuGame() {
   }, [mode]);
 
   const board = state?.board ?? null;
+  const difficulty: Difficulty = state?.puzzle.difficulty ?? "easy";
   const conflicts = useMemo(() => (board ? getConflicts(board) : new Set<string>()), [board]);
 
   const sync = useRoomSync(
@@ -98,56 +109,65 @@ export function SudokuGame() {
       setStartTime(Date.now());
       setNow(Date.now());
       setWon(false);
+      setRevealArmed(false);
     }
   );
 
-  const startSolo = useCallback((d: Difficulty) => {
-    const fresh = newGameState(d);
+  const startSolo = useCallback((d: Difficulty, excludeId?: string) => {
+    const fresh = newGameState(d, excludeId);
     setState(fresh);
-    setDifficulty(d);
     setSelected({ row: 0, col: 0 });
     setPencilMode(false);
     setStartTime(Date.now());
     setNow(Date.now());
     setWon(false);
+    setRevealArmed(false);
   }, []);
 
-  const handleEnterSolo = useCallback(() => {
-    setMode({ kind: "solo" });
-    startSolo("easy");
-  }, [startSolo]);
+  const handleEnterSolo = useCallback(
+    (chosenDifficulty: Difficulty) => {
+      setMode({ kind: "solo" });
+      startSolo(chosenDifficulty);
+    },
+    [startSolo]
+  );
 
   const handleCreateRoom = useCallback(
     async (me: "ashish" | "momo", chosenDifficulty: Difficulty) => {
       if (!sync.createRoom) return;
       const code = await sync.createRoom(chosenDifficulty);
-      if (code) {
-        setMode({ kind: "room", roomCode: code, me });
-        setDifficulty(chosenDifficulty);
-      }
+      if (code) setMode({ kind: "room", roomCode: code, me });
     },
     [sync]
   );
 
-  const handleJoinRoom = useCallback(
-    (code: string, me: "ashish" | "momo") => {
-      setMode({ kind: "room", roomCode: code.toUpperCase(), me });
-    },
-    []
-  );
+  const handleJoinRoom = useCallback((code: string, me: "ashish" | "momo") => {
+    setMode({ kind: "room", roomCode: code.toUpperCase(), me });
+  }, []);
 
   const handleLeaveRoom = useCallback(() => {
     setMode({ kind: "lobby" });
     setState(null);
   }, []);
 
+  const handleDifficultyClick = useCallback(
+    (d: Difficulty) => {
+      if (mode.kind === "solo") {
+        startSolo(d, state?.puzzle.id);
+      } else if (mode.kind === "room" && sync.replaceRoomPuzzle) {
+        void sync.replaceRoomPuzzle(d);
+      }
+    },
+    [mode, startSolo, state?.puzzle.id, sync]
+  );
+
   const newPuzzleInSameMode = useCallback(() => {
     if (mode.kind === "solo") {
-      startSolo(difficulty);
+      startSolo(difficulty, state?.puzzle.id);
     } else if (mode.kind === "room" && sync.replaceRoomPuzzle) {
-      sync.replaceRoomPuzzle(difficulty);
+      void sync.replaceRoomPuzzle(difficulty);
     }
-  }, [difficulty, mode, startSolo, sync]);
+  }, [difficulty, mode, startSolo, state?.puzzle.id, sync]);
 
   useEffect(() => {
     if (won) return;
@@ -203,6 +223,41 @@ export function SudokuGame() {
     });
   }, [updateCell, won]);
 
+  const handleHint = useCallback(() => {
+    if (won || !state) return;
+    const coord = findHintCell(state.board);
+    if (!coord) return;
+    const nextBoard = applyHint(state.board, state.solution, coord);
+    setState({ ...state, board: nextBoard });
+    setSelected(coord);
+    if (mode.kind === "room" && sync.pushBoard) sync.pushBoard(nextBoard);
+  }, [mode, state, sync, won]);
+
+  const armReveal = useCallback(() => {
+    setRevealArmed(true);
+    if (revealTimer.current) window.clearTimeout(revealTimer.current);
+    revealTimer.current = window.setTimeout(() => setRevealArmed(false), 3000);
+  }, []);
+
+  const handleReveal = useCallback(() => {
+    if (won || !state) return;
+    if (!revealArmed) {
+      armReveal();
+      return;
+    }
+    if (revealTimer.current) window.clearTimeout(revealTimer.current);
+    setRevealArmed(false);
+    const nextBoard = revealBoard(state.board, state.solution);
+    setState({ ...state, board: nextBoard });
+    if (mode.kind === "room" && sync.pushBoard) sync.pushBoard(nextBoard);
+  }, [armReveal, mode, revealArmed, state, sync, won]);
+
+  useEffect(() => {
+    return () => {
+      if (revealTimer.current) window.clearTimeout(revealTimer.current);
+    };
+  }, []);
+
   const moveSelection = useCallback((dr: number, dc: number) => {
     setSelected((curr) => {
       if (!curr) return { row: 0, col: 0 };
@@ -222,6 +277,7 @@ export function SudokuGame() {
       if (key >= "1" && key <= "9") { handleNumberInput(Number(key)); return; }
       if (key === "0" || key === "Backspace" || key === "Delete") { handleErase(); return; }
       if (key === "p" || key === "P") { setPencilMode((p) => !p); return; }
+      if (key === "h" || key === "H") { handleHint(); return; }
       if (key === "ArrowUp") { event.preventDefault(); moveSelection(-1, 0); return; }
       if (key === "ArrowDown") { event.preventDefault(); moveSelection(1, 0); return; }
       if (key === "ArrowLeft") { event.preventDefault(); moveSelection(0, -1); return; }
@@ -229,13 +285,13 @@ export function SudokuGame() {
     }
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [handleErase, handleNumberInput, mode.kind, moveSelection]);
+  }, [handleErase, handleHint, handleNumberInput, mode.kind, moveSelection]);
 
   useEffect(() => {
-    if (mode.kind !== "lobby" && !state && mode.kind === "solo") {
-      startSolo(difficulty);
+    if (mode.kind === "solo" && !state) {
+      startSolo("easy");
     }
-  }, [difficulty, mode, startSolo, state]);
+  }, [mode, startSolo, state]);
 
   if (mode.kind === "lobby" || !state) {
     return (
@@ -249,6 +305,7 @@ export function SudokuGame() {
   }
 
   const elapsed = now - startTime;
+  const emptyCells = state.board.flat().filter((c) => c.value == null).length;
 
   return (
     <div className="su-wrap">
@@ -275,10 +332,7 @@ export function SudokuGame() {
               aria-pressed={difficulty === d}
               className={`btn-ghost ${difficulty === d ? "is-active" : ""}`}
               key={d}
-              onClick={() => {
-                setDifficulty(d);
-                if (mode.kind === "solo") startSolo(d);
-              }}
+              onClick={() => handleDifficultyClick(d)}
               type="button"
             >
               {difficultyLabel(d)}
@@ -288,12 +342,34 @@ export function SudokuGame() {
         <div className="su-meta">
           <div className="su-timer">{formatTime(elapsed)}</div>
           <button className="btn-ghost" onClick={newPuzzleInSameMode} type="button">
-            New puzzle
+            New
           </button>
         </div>
       </div>
 
       <SudokuBoard board={state.board} conflicts={conflicts} onSelect={(row, col) => setSelected({ row, col })} selected={selected} />
+
+      <div className="su-actions">
+        <button
+          className="btn-ghost"
+          disabled={won || emptyCells === 0}
+          onClick={handleHint}
+          type="button"
+          title="Fill one cell from the solution"
+        >
+          Hint
+        </button>
+        <button
+          aria-pressed={revealArmed}
+          className={`btn-ghost ${revealArmed ? "is-warn" : ""}`}
+          disabled={won || emptyCells === 0}
+          onClick={handleReveal}
+          type="button"
+          title="Fill the rest from the solution"
+        >
+          {revealArmed ? "Tap again to reveal" : "Reveal"}
+        </button>
+      </div>
 
       {won ? (
         <div className="su-win">
@@ -326,7 +402,7 @@ export function SudokuGame() {
       />
 
       <div className="su-hints">
-        Tap a cell, then a number. <kbd>1</kbd>–<kbd>9</kbd> to fill, <kbd>P</kbd> to pencil, <kbd>⌫</kbd> to erase, arrows to move.
+        Tap a cell, then a number. <kbd>1</kbd>–<kbd>9</kbd> to fill, <kbd>P</kbd> pencil, <kbd>H</kbd> hint, <kbd>⌫</kbd> erase, arrows to move.
         <br />
         {PUZZLES[difficulty].length} {difficulty} puzzles in the bank.
       </div>

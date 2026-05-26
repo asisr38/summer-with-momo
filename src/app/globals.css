@@ -917,6 +917,12 @@ body.secret-mode #secret-btn {
 }
 .btn-ghost:hover { color: var(--ink); border-color: var(--ink-soft); }
 .btn-ghost.is-active { background: var(--rose); border-color: var(--rose); color: var(--ink-on-rose); }
+.btn-ghost.is-warn { background: var(--rose-soft); border-color: var(--rose); color: var(--rose-deep); animation: warnPulse 1.6s var(--ease) infinite; }
+.btn-ghost:disabled { opacity: 0.4; cursor: not-allowed; }
+@keyframes warnPulse {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in oklch, var(--rose) 35%, transparent); }
+  50%      { box-shadow: 0 0 0 6px color-mix(in oklch, var(--rose) 0%, transparent); }
+}
 
 .modal-close {
   margin-top: var(--s-3);
@@ -1086,6 +1092,16 @@ body.secret-mode #secret-btn {
   align-items: center;
   gap: var(--s-3);
   flex-wrap: wrap;
+}
+
+.su-actions {
+  display: flex;
+  gap: var(--s-2);
+  justify-content: center;
+}
+.su-actions .btn-ghost {
+  flex: 1;
+  max-width: 180px;
 }
 .su-diff { display: flex; gap: var(--s-2); flex-wrap: wrap; }
 .su-meta { display: flex; align-items: center; gap: var(--s-3); }

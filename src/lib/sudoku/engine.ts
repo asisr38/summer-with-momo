@@ -160,6 +160,71 @@ function canPlace(grid: number[], idx: number, value: number): boolean {
   return true;
 }
 
+export function countSolutions(givens: string, cap = 2): number {
+  if (givens.length !== 81) return 0;
+  const grid: number[] = givens.split("").map((c) => {
+    const n = Number(c);
+    return n >= 1 && n <= 9 ? n : 0;
+  });
+  if (!isValidStart(grid)) return 0;
+
+  let count = 0;
+  function recurse(): void {
+    if (count >= cap) return;
+    const idx = grid.indexOf(0);
+    if (idx === -1) {
+      count += 1;
+      return;
+    }
+    for (let v = 1; v <= 9; v += 1) {
+      if (count >= cap) return;
+      if (canPlace(grid, idx, v)) {
+        grid[idx] = v;
+        recurse();
+        grid[idx] = 0;
+      }
+    }
+  }
+  recurse();
+  return count;
+}
+
+export function findHintCell(board: Board): { row: number; col: number } | null {
+  const empty: Array<{ row: number; col: number }> = [];
+  for (let r = 0; r < SIZE; r += 1) {
+    for (let c = 0; c < SIZE; c += 1) {
+      if (board[r][c].value == null) empty.push({ row: r, col: c });
+    }
+  }
+  if (empty.length === 0) return null;
+  return empty[Math.floor(Math.random() * empty.length)];
+}
+
+export function applyHint(board: Board, solution: string, coord: { row: number; col: number }): Board {
+  const next = cloneBoard(board);
+  const value = Number(solution[coord.row * SIZE + coord.col]);
+  if (value >= 1 && value <= 9) {
+    next[coord.row][coord.col].value = value;
+    next[coord.row][coord.col].pencil = [];
+  }
+  return next;
+}
+
+export function revealBoard(board: Board, solution: string): Board {
+  const next = cloneBoard(board);
+  for (let r = 0; r < SIZE; r += 1) {
+    for (let c = 0; c < SIZE; c += 1) {
+      if (next[r][c].given) continue;
+      const value = Number(solution[r * SIZE + c]);
+      if (value >= 1 && value <= 9) {
+        next[r][c].value = value;
+        next[r][c].pencil = [];
+      }
+    }
+  }
+  return next;
+}
+
 export function getPeers(row: number, col: number): Set<string> {
   const peers = new Set<string>();
   for (let i = 0; i < SIZE; i += 1) {
