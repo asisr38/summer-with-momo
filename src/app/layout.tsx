@@ -1,14 +1,30 @@
 import type { Metadata, Viewport } from "next";
+import { Fraunces, Inter } from "next/font/google";
 import "./globals.css";
 
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-sans",
+  display: "swap"
+});
+
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+  style: ["normal", "italic"],
+  variable: "--font-serif",
+  display: "swap"
+});
+
 export const metadata: Metadata = {
-  title: "Our Summer in DC 💖",
-  description: "Our summer together in DC — the plan, the trips, the eats",
+  title: "Our summer.",
+  description: "Ashish & Momo. Sixty-two days in DC.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Our Summer"
+    title: "Our summer"
   },
   icons: {
     apple: "/icon.svg",
@@ -20,7 +36,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#EC4899"
+  themeColor: "#FBF6EE"
 };
 
 export default function RootLayout({
@@ -29,7 +45,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${inter.variable} ${fraunces.variable}`}>
       <body>{children}</body>
     </html>
   );

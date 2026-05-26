@@ -1,4 +1,4 @@
-const CACHE = 'our-summer-v1';
+const CACHE = 'our-summer-v3';
 const ASSETS = ['/', '/index.html', '/icon.svg', '/icon-maskable.svg', '/manifest.json'];
 
 // Install — pre-cache core assets

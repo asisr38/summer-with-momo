@@ -1,24 +1,41 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import type { ReactNode } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { ARRIVAL, DEPARTURE, HER_NAME, SECRET_PWD, eats, trips, weeks } from "@/lib/data";
-import type { Day } from "@/lib/data";
+import type { Day, Trip } from "@/lib/data";
+import { SudokuGame } from "./components/sudoku/SudokuGame";
 
-type Tab = "plan" | "trips" | "eats" | "track";
+type Tab = "plan" | "trips" | "eats" | "progress" | "sudoku";
 
-const progressMessages = [
-  "Check off dates as you experience them together! 💕",
-  "The adventure is just beginning! 🌟",
-  "You're on your way — keep making memories! 💖",
-  "Halfway through the most amazing summer! ✨",
-  "Almost there — every moment counts! 🥹",
-  "What an incredible summer you've had together! 💖🎉"
+type Countdown =
+  | { phase: "before"; days: number; hours: number; minutes: number; seconds: number }
+  | { phase: "during"; dayOfTrip: number; totalDays: number }
+  | { phase: "after" };
+
+const TOTAL_DAYS = 56;
+
+const progressNotes = [
+  "Still waiting.",
+  "She's landed. You're moving.",
+  "Settling into it.",
+  "Halfway through.",
+  "More memory than countdown.",
+  "Almost the long goodbye.",
+  "Held."
 ];
+
+function noteForProgress(pct: number): string {
+  if (pct === 0) return progressNotes[0];
+  if (pct < 20) return progressNotes[1];
+  if (pct < 40) return progressNotes[2];
+  if (pct < 60) return progressNotes[3];
+  if (pct < 80) return progressNotes[4];
+  if (pct < 100) return progressNotes[5];
+  return progressNotes[6];
+}
 
 function readCheckedDays() {
   if (typeof window === "undefined") return new Set<string>();
-
   return new Set(
     weeks
       .flatMap((week) => week.days)
@@ -27,64 +44,82 @@ function readCheckedDays() {
   );
 }
 
-function getCountdown() {
+function getCountdown(): Countdown {
   const arrival = new Date(ARRIVAL);
   const departure = new Date(DEPARTURE);
   const now = new Date();
   const diff = arrival.getTime() - now.getTime();
 
   if (diff <= 0 && now <= departure) {
-    const dayIn = Math.floor((now.getTime() - arrival.getTime()) / 86400000) + 1;
-    return { message: `🎉 She's here! Day ${dayIn} of 56! 💖` };
+    return {
+      phase: "during",
+      dayOfTrip: Math.floor((now.getTime() - arrival.getTime()) / 86400000) + 1,
+      totalDays: TOTAL_DAYS
+    };
   }
 
-  if (now > departure) {
-    return { message: "💖 What an incredible summer together! 🌟" };
-  }
+  if (now > departure) return { phase: "after" };
 
   return {
+    phase: "before",
     days: Math.floor(diff / 86400000),
     hours: Math.floor((diff % 86400000) / 3600000),
-    minutes: Math.floor((diff % 3600000) / 60000)
+    minutes: Math.floor((diff % 3600000) / 60000),
+    seconds: Math.floor((diff % 60000) / 1000)
   };
 }
+
+function stripTagEmoji(tag: string): string {
+  return tag
+    .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{1F000}-\u{1F02F}]/gu, "")
+    .trim()
+    .toUpperCase();
+}
+
+const TYPE_TONE: Record<string, string> = {
+  arrival: "tone-rose",
+  nyc: "tone-rose",
+  musical: "tone-plum",
+  evening: "tone-ochre",
+  weekend: "tone-sage",
+  camp: "tone-sage",
+  away: "tone-peach",
+  holiday: "tone-peach",
+  beach: "tone-teal"
+};
+
+const TAB_LIST: Array<{ key: Tab; label: string }> = [
+  { key: "plan", label: "Plan" },
+  { key: "trips", label: "Trips" },
+  { key: "eats", label: "Eats" },
+  { key: "progress", label: "Progress" },
+  { key: "sudoku", label: "Sudoku" }
+];
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<Tab>("plan");
   const [checkedDays, setCheckedDays] = useState<Set<string>>(() => new Set());
-  const [countdown, setCountdown] = useState(getCountdown);
+  const [countdown, setCountdown] = useState<Countdown | null>(null);
   const [secretOpen, setSecretOpen] = useState(false);
   const [secretMode, setSecretMode] = useState(false);
   const [secretInput, setSecretInput] = useState("");
   const [secretError, setSecretError] = useState(false);
-  const [hearts, setHearts] = useState<Array<{ id: number; emoji: string; left: number; duration: number; delay: number; size: number }>>([]);
+  const [tabRect, setTabRect] = useState<{ left: number; width: number }>({ left: 0, width: 0 });
+  const tabRefs = useRef<Partial<Record<Tab, HTMLButtonElement | null>>>({});
+  const tabsNavRef = useRef<HTMLDivElement | null>(null);
 
   const allDays = useMemo(() => weeks.flatMap((week) => week.days), []);
   const doneCount = checkedDays.size;
   const totalDays = allDays.length;
   const progressPct = totalDays ? Math.round((doneCount / totalDays) * 100) : 0;
-  const progressNote = progressMessages[Math.min(Math.floor(progressPct / 20), progressMessages.length - 1)];
 
   useEffect(() => {
     setCheckedDays(readCheckedDays());
+    setCountdown(getCountdown());
     const timer = window.setInterval(() => setCountdown(getCountdown()), 1000);
-
-    const emojis = ["💖", "💕", "🌸", "✨", "💗", "🌷", "💝", "⭐", "🌟", "💞"];
-    setHearts(
-      Array.from({ length: 18 }, (_, id) => ({
-        id,
-        emoji: emojis[Math.floor(Math.random() * emojis.length)],
-        left: Math.random() * 100,
-        duration: 12 + Math.random() * 18,
-        delay: Math.random() * 20,
-        size: 0.9 + Math.random() * 1.2
-      }))
-    );
-
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("/sw.js").catch(() => {});
     }
-
     return () => window.clearInterval(timer);
   }, []);
 
@@ -97,10 +132,26 @@ export default function Home() {
     function handleEscape(event: KeyboardEvent) {
       if (event.key === "Escape") closeModal();
     }
-
     document.addEventListener("keydown", handleEscape);
     return () => document.removeEventListener("keydown", handleEscape);
   }, []);
+
+  useLayoutEffect(() => {
+    const node = tabRefs.current[activeTab];
+    const wrap = tabsNavRef.current;
+    if (!node || !wrap) return;
+    setTabRect({ left: node.offsetLeft, width: node.offsetWidth });
+  }, [activeTab]);
+
+  useEffect(() => {
+    function resize() {
+      const node = tabRefs.current[activeTab];
+      if (!node) return;
+      setTabRect({ left: node.offsetLeft, width: node.offsetWidth });
+    }
+    window.addEventListener("resize", resize);
+    return () => window.removeEventListener("resize", resize);
+  }, [activeTab]);
 
   function toggleCheck(id: string) {
     setCheckedDays((current) => {
@@ -121,7 +172,6 @@ export default function Home() {
       setSecretMode(false);
       return;
     }
-
     setSecretOpen(true);
   }
 
@@ -137,7 +187,6 @@ export default function Home() {
       closeModal();
       return;
     }
-
     setSecretError(true);
     setSecretInput("");
     window.setTimeout(() => setSecretError(false), 400);
@@ -145,127 +194,112 @@ export default function Home() {
 
   return (
     <>
-      <div className="hearts-bg" aria-hidden="true">
-        {hearts.map((heart) => (
-          <div
-            className="heart-float"
-            key={heart.id}
-            style={{
-              left: `${heart.left}%`,
-              animationDuration: `${heart.duration}s`,
-              animationDelay: `${heart.delay}s`,
-              fontSize: `${heart.size}rem`
-            }}
-          >
-            {heart.emoji}
-          </div>
-        ))}
-      </div>
+      <Hero countdown={countdown} doneCount={doneCount} totalDays={totalDays} tripCount={trips.length} />
 
-      <header className="hero">
-        <div className="hero-logo">Our Summer in DC 💖</div>
-        <div className="hero-sub">
-          Ashish & <span>{HER_NAME}</span> · June 22 – August 16, 2026
+      <nav className="tabs-nav" aria-label="Sections">
+        <div className="tabs-nav-inner" ref={tabsNavRef}>
+          {TAB_LIST.map((tab) => (
+            <button
+              className={`tab-btn ${activeTab === tab.key ? "active" : ""}`}
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              ref={(el) => {
+                tabRefs.current[tab.key] = el;
+              }}
+              type="button"
+            >
+              {tab.label}
+            </button>
+          ))}
+          <div className="tab-indicator" style={{ left: tabRect.left, width: tabRect.width }} />
         </div>
-        <CountdownView countdown={countdown} />
-        <div className="hero-dates">✈️ Arrives June 22 &nbsp;·&nbsp; 56 magical days &nbsp;·&nbsp; Departs August 16 ✈️</div>
-      </header>
-
-      <StatsBar doneCount={doneCount} totalDays={totalDays} />
-
-      <nav className="tabs-nav" aria-label="Summer sections">
-        <TabButton active={activeTab === "plan"} onClick={() => setActiveTab("plan")}>
-          📅 The Plan
-        </TabButton>
-        <TabButton active={activeTab === "trips"} onClick={() => setActiveTab("trips")}>
-          ✈️ Our Trips
-        </TabButton>
-        <TabButton active={activeTab === "eats"} onClick={() => setActiveTab("eats")}>
-          🍽️ Where to Eat
-        </TabButton>
-        <TabButton active={activeTab === "track"} onClick={() => setActiveTab("track")}>
-          💚 Progress
-        </TabButton>
       </nav>
 
       <main className="content">
         <section className={`tab-panel ${activeTab === "plan" ? "active" : ""}`}>
+          <p className="section-eyebrow">The plan</p>
+          <h2 className="section-headline">Sixty-two days, mostly together.</h2>
           {weeks.map((week) => (
             <div className="week-block" key={week.title}>
-              <div className="week-title">
-                {week.title} <span className="badge">{week.subtitle}</span>
-              </div>
+              <header className="week-header">
+                <h3 className="week-title">{week.title}</h3>
+                <div className="week-sub">{week.subtitle}</div>
+              </header>
               {week.days.map((day) => (
-                <DayCard day={day} checked={checkedDays.has(day.id)} key={day.id} onToggle={toggleCheck} />
+                <DayRow day={day} checked={checkedDays.has(day.id)} key={day.id} onToggle={toggleCheck} />
               ))}
             </div>
           ))}
         </section>
 
         <section className={`tab-panel ${activeTab === "trips" ? "active" : ""}`}>
-          <p className="section-title">✈️ Our Adventures Beyond DC</p>
-          <div className="trip-grid">
+          <p className="section-eyebrow">Beyond DC</p>
+          <h2 className="section-headline">The four trips.</h2>
+          <div>
             {trips.map((trip) => (
-              <div className="trip-card" key={trip.title}>
-                <div className={`trip-header ${trip.type}`}>
-                  <div className="trip-when">{trip.when}</div>
-                  <div className="trip-title-text">
-                    {trip.icon} {trip.title}
-                  </div>
-                  <div className="trip-subtitle">{trip.subtitle}</div>
-                </div>
-                <div className="trip-body">
-                  {trip.items.map((item) => (
-                    <div className="trip-row" key={`${trip.title}-${item.t}`}>
-                      <div className="trip-icon">{item.i}</div>
-                      <div className="trip-row-text">{item.t}</div>
-                    </div>
-                  ))}
-                  <div>
-                    <span className="trip-cost">💰 {trip.cost}</span>
-                  </div>
-                </div>
-              </div>
+              <TripBlock trip={trip} key={trip.title} />
             ))}
           </div>
         </section>
 
         <section className={`tab-panel ${activeTab === "eats" ? "active" : ""}`}>
-          <p className="section-title">🍽️ Where We&apos;re Eating This Summer</p>
+          <p className="section-eyebrow">Where to eat</p>
+          <h2 className="section-headline">A short list, by mood.</h2>
           {eats.map((section) => (
             <div className="resto-section" key={section.section}>
-              <div className="resto-section-title">{section.section}</div>
-              <div className="resto-grid">
-                {section.items.map((restaurant) => (
-                  <div className="resto-card" key={`${section.section}-${restaurant.n}`}>
-                    <div className="resto-name">{restaurant.n}</div>
-                    <div className="resto-type">{restaurant.c}</div>
-                    <div className="resto-why">{restaurant.w}</div>
-                    <div className="resto-price">{restaurant.p}</div>
-                  </div>
+              <h3 className="resto-section-title">{section.section}</h3>
+              <div className="resto-list">
+                {section.items.map((r) => (
+                  <article className="resto-row" key={`${section.section}-${r.n}`}>
+                    <div>
+                      <h4 className="resto-name">
+                        {r.n}
+                        <span className="resto-type"> — {r.c}</span>
+                      </h4>
+                      <p className="resto-why">{r.w}</p>
+                    </div>
+                    <div className="resto-price">{r.p}</div>
+                  </article>
                 ))}
               </div>
             </div>
           ))}
         </section>
 
-        <section className={`tab-panel ${activeTab === "track" ? "active" : ""}`}>
-          <div className="progress-box">
-            <div className="progress-title">💚 Our Summer Progress</div>
-            <div className="progress-pct">{progressPct}%</div>
-            <div className="progress-bar-wrap">
-              <div className="progress-bar-fill" style={{ width: `${progressPct}%` }} />
+        <section className={`tab-panel ${activeTab === "progress" ? "active" : ""}`}>
+          <p className="section-eyebrow">Progress</p>
+          <h2 className="section-headline">{noteForProgress(progressPct)}</h2>
+          <div className="progress-hero">
+            <div className="progress-num">
+              {doneCount}
+              <small>/{totalDays}</small>
             </div>
-            <div className="progress-note">{progressNote}</div>
-            <div className="progress-grid">
-              <ProgressCard label="Dates Done" value={doneCount} />
-              <ProgressCard label="Still Ahead" value={totalDays - doneCount} />
-              <ProgressCard label="Trips Planned" value={4} />
-              <ProgressCard label="Days Together" value={56} />
+            <div className="progress-meta">
+              <div className="progress-meta-line">
+                <strong>{doneCount}</strong> dates lived
+              </div>
+              <div className="progress-meta-line">
+                <strong>{totalDays - doneCount}</strong> still ahead
+              </div>
+              <div className="progress-meta-line">
+                <strong>{trips.length}</strong> trip blocks planned
+              </div>
+              <p className="progress-note">{progressPct}% of the summer.</p>
             </div>
           </div>
-          <div>
-            <div className="section-title">✅ All Dates Checklist</div>
+
+          <div className="progress-cal" aria-label="Calendar of 56 days">
+            {allDays.map((day) => (
+              <div
+                aria-label={`${day.date}, ${checkedDays.has(day.id) ? "done" : "ahead"}`}
+                className={`progress-dot ${checkedDays.has(day.id) ? "is-done" : ""}`}
+                key={`dot-${day.id}`}
+              />
+            ))}
+          </div>
+
+          <div className="track-list">
+            <p className="section-eyebrow">All dates</p>
             {weeks.map((week) => (
               <div key={`track-${week.title}`}>
                 <div className="track-week-title">{week.title}</div>
@@ -276,30 +310,38 @@ export default function Home() {
             ))}
           </div>
         </section>
+
+        <section className={`tab-panel ${activeTab === "sudoku" ? "active" : ""}`}>
+          <p className="section-eyebrow">Sudoku</p>
+          <h2 className="section-headline">A board for the two of you.</h2>
+          {activeTab === "sudoku" ? <SudokuGame /> : null}
+        </section>
       </main>
 
-      <button id="secret-btn" onClick={openSecretModal} title="Ashish's Secret View" type="button">
-        {secretMode ? "🔓" : "🔒"}
+      <button id="secret-btn" onClick={openSecretModal} title="Private notes" type="button">
+        {secretMode ? "Hide notes" : "Private"}
       </button>
 
       <div className={`modal-overlay ${secretOpen ? "open" : ""}`} onClick={(event) => event.target === event.currentTarget && closeModal()}>
         <div className="modal">
-          <div className="modal-emoji">🔐</div>
-          <div className="modal-title">Secret Mode</div>
-          <div className="modal-sub">Enter the password to reveal all surprise details and secret notes! Only Ashish knows this one 🤫</div>
+          <div className="modal-title">Private notes</div>
+          <div className="modal-sub">
+            Enter the password to see the notes you left for yourself. Only you know this one.
+          </div>
           <input
+            autoFocus
             className={`modal-input ${secretError ? "error" : ""}`}
             onChange={(event) => setSecretInput(event.target.value)}
             onKeyDown={(event) => event.key === "Enter" && checkSecret()}
-            placeholder="password"
+            placeholder="Password"
             type="password"
             value={secretInput}
           />
-          <button className="modal-btn" onClick={checkSecret} type="button">
-            Unlock Surprises 🌟
+          <button className="btn-primary" onClick={checkSecret} type="button">
+            Unlock
           </button>
           <button className="modal-close" onClick={closeModal} type="button">
-            Never mind
+            Cancel
           </button>
         </div>
       </div>
@@ -307,111 +349,134 @@ export default function Home() {
   );
 }
 
-function CountdownView({ countdown }: { countdown: ReturnType<typeof getCountdown> }) {
-  if ("message" in countdown) {
-    return (
-      <div className="countdown-box">
-        <div className="countdown-message">{countdown.message}</div>
+function Hero({ countdown, doneCount, totalDays, tripCount }: { countdown: Countdown | null; doneCount: number; totalDays: number; tripCount: number }) {
+  return (
+    <header className="hero">
+      <p className="hero-eyebrow">Our summer.</p>
+
+      {countdown === null ? (
+        <div className="hero-counter-row">
+          <div className="hero-counter" suppressHydrationWarning>
+            &nbsp;
+          </div>
+          <div className="hero-counter-label">
+            days until <span className="her-name">{HER_NAME}</span> lands in DC.
+          </div>
+        </div>
+      ) : countdown.phase === "before" ? (
+        <>
+          <div className="hero-counter-row">
+            <div className="hero-counter">{countdown.days}</div>
+            <div className="hero-counter-label">
+              days until <span className="her-name">{HER_NAME}</span> lands in DC.
+            </div>
+          </div>
+          <div className="hero-units">
+            <strong>{String(countdown.hours).padStart(2, "0")}</strong>h
+            <strong>{String(countdown.minutes).padStart(2, "0")}</strong>m
+            <strong>{String(countdown.seconds).padStart(2, "0")}</strong>s
+          </div>
+        </>
+      ) : countdown.phase === "during" ? (
+        <>
+          <div className="hero-counter-row">
+            <div className="hero-counter">{countdown.dayOfTrip}</div>
+            <div className="hero-counter-label">
+              of {countdown.totalDays} with <span className="her-name">{HER_NAME}</span>.
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="hero-arrived">Held.</div>
+      )}
+
+      <div className="hero-meta">
+        <span>Arrives Jun 22, 2026</span>
+        <span>{TOTAL_DAYS} days</span>
+        <span>Departs Aug 16, 2026</span>
+        <span>
+          {doneCount} of {totalDays} done
+        </span>
+        <span>{tripCount} trips</span>
       </div>
-    );
-  }
-
-  return (
-    <div className="countdown-box">
-      <CountdownUnit label="Days" value={countdown.days} />
-      <div className="cd-sep">:</div>
-      <CountdownUnit label="Hours" value={countdown.hours} />
-      <div className="cd-sep">:</div>
-      <CountdownUnit label="Minutes" value={countdown.minutes} />
-    </div>
+    </header>
   );
 }
 
-function CountdownUnit({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="cd-unit">
-      <div className="cd-num">{String(value).padStart(2, "0")}</div>
-      <div className="cd-label">{label}</div>
-    </div>
-  );
-}
-
-function StatsBar({ doneCount, totalDays }: { doneCount: number; totalDays: number }) {
-  return (
-    <div className="stats">
-      <div className="stat-pill">📅 56 days together</div>
-      <div className="stat-pill">✈️ 4 trips planned</div>
-      <div className="stat-pill">🛍️ Tysons shopping day</div>
-      <div className="stat-pill">🎭 Musical nights every week</div>
-      <div className="stat-pill">🌲 Grand Marais birthday</div>
-      <div className="stat-pill">🗽 NYC + Broadway</div>
-      <div className="stat-pill">
-        💚 {doneCount}/{totalDays} dates done
-      </div>
-    </div>
-  );
-}
-
-function TabButton({ active, children, onClick }: { active: boolean; children: ReactNode; onClick: () => void }) {
-  return (
-    <button className={`tab-btn ${active ? "active" : ""}`} onClick={onClick} type="button">
-      {children}
-    </button>
-  );
-}
-
-function DayCard({ checked, day, onToggle }: { checked: boolean; day: Day; onToggle: (id: string) => void }) {
+function DayRow({ checked, day, onToggle }: { checked: boolean; day: Day; onToggle: (id: string) => void }) {
   const [month, dayNumber] = day.date.split(" ");
+  const tagText = stripTagEmoji(day.tag);
+  const tone = TYPE_TONE[day.type] ?? "";
 
   return (
-    <div className={`day-card type-${day.type} ${checked ? "completed" : ""}`} id={`card_${day.id}`}>
-      <div className="date-col">
-        <div className="day-name">{day.day}</div>
-        <div className="day-num">{dayNumber}</div>
-        <div className="month-name">{month}</div>
+    <article className={`day ${checked ? "is-done" : ""}`}>
+      <div className="day-date">
+        {day.day}
+        <span className="day-date-num">{dayNumber}</span>
+        <span className="day-date-month">{month}</span>
       </div>
-      <div className="card-body">
-        <div className="card-top">
-          <span className={`type-tag tag-${day.type}`}>{day.tag}</span>
-        </div>
-        <div className="card-title">
+      <div className="day-body">
+        {tagText ? <div className={`day-tag ${tone}`}>{tagText}</div> : null}
+        <h3 className="day-title">
           {day.emoji} {day.title}
-        </div>
-        <div className="card-desc">{day.desc}</div>
-        {day.isSurprise ? <div className="surprise-blur">✨ Ashish has something magical planned... 🔒</div> : null}
+        </h3>
+        <p className="day-desc">{day.desc}</p>
+        {day.isSurprise ? <div className="surprise-blur">Ashish has something planned.</div> : null}
         {day.secretNote ? <div className="secret-note">{day.secretNote}</div> : null}
-        <div className="card-footer">
-          <span className="cost-badge">💰 {day.cost}</span>
-          <button className={`check-btn ${checked ? "checked" : ""}`} onClick={() => onToggle(day.id)} title="Mark as done!" type="button">
-            ✓
-          </button>
-        </div>
+        {day.cost ? <div className="day-cost">{day.cost}</div> : null}
       </div>
-    </div>
+      <button
+        aria-label={checked ? "Mark as not done" : "Mark as done"}
+        className={`day-check ${checked ? "is-checked" : ""}`}
+        onClick={() => onToggle(day.id)}
+        type="button"
+      >
+        ✓
+      </button>
+    </article>
   );
 }
 
-function ProgressCard({ label, value }: { label: string; value: number }) {
+function TripBlock({ trip }: { trip: Trip }) {
   return (
-    <div className="prog-card">
-      <div className="prog-card-num">{value}</div>
-      <div className="prog-card-label">{label}</div>
-    </div>
+    <article className="trip">
+      <header>
+        <div className="trip-when">{trip.when}</div>
+        <h3 className="trip-title-text">
+          {trip.icon} {trip.title}
+        </h3>
+        <p className="trip-subtitle">{trip.subtitle}</p>
+      </header>
+      <div className="trip-body">
+        {trip.items.map((item, idx) => (
+          <div className="trip-row" key={`${trip.title}-${item.t}`}>
+            <div className="trip-row-marker">{String(idx + 1).padStart(2, "0")}</div>
+            <div className="trip-row-text">
+              <strong>{item.i}</strong> {item.t}
+            </div>
+          </div>
+        ))}
+        <div className="trip-cost">Budget · {trip.cost}</div>
+      </div>
+    </article>
   );
 }
 
 function TrackRow({ checked, day, onToggle }: { checked: boolean; day: Day; onToggle: (id: string) => void }) {
   return (
-    <div className={`track-row ${checked ? "is-complete" : ""}`}>
-      <button className={`check-btn ${checked ? "checked" : ""}`} onClick={() => onToggle(day.id)} type="button">
+    <div className={`track-row ${checked ? "is-done" : ""}`}>
+      <button
+        aria-label={checked ? "Mark as not done" : "Mark as done"}
+        className={`day-check ${checked ? "is-checked" : ""}`}
+        onClick={() => onToggle(day.id)}
+        type="button"
+      >
         ✓
       </button>
       <span className="track-date">
         {day.day} {day.date}
       </span>
-      <span className="track-title">
-        {day.emoji} {day.title}
-      </span>
+      <span className="track-title">{day.title}</span>
     </div>
   );
 }
