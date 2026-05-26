@@ -187,10 +187,13 @@ export function SudokuGame() {
       const target = state.board[selected.row][selected.col];
       if (target.given) return;
       const nextBoard = cloneBoard(state.board);
-      mutator(nextBoard[selected.row][selected.col]);
+      const nextCell = nextBoard[selected.row][selected.col];
+      mutator(nextCell);
       const nextState = { ...state, board: nextBoard };
       setState(nextState);
-      if (mode.kind === "room" && sync.pushBoard) sync.pushBoard(nextBoard);
+      if (mode.kind === "room" && sync.pushCell) {
+        sync.pushCell(selected.row, selected.col, nextCell, nextBoard);
+      }
     },
     [mode, selected, state, sync]
   );
@@ -230,7 +233,9 @@ export function SudokuGame() {
     const nextBoard = applyHint(state.board, state.solution, coord);
     setState({ ...state, board: nextBoard });
     setSelected(coord);
-    if (mode.kind === "room" && sync.pushBoard) sync.pushBoard(nextBoard);
+    if (mode.kind === "room" && sync.pushCell) {
+      sync.pushCell(coord.row, coord.col, nextBoard[coord.row][coord.col], nextBoard);
+    }
   }, [mode, state, sync, won]);
 
   const armReveal = useCallback(() => {
