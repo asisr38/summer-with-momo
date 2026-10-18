@@ -1,5 +1,7 @@
-const CACHE = 'our-summer-v3';
-const ASSETS = ['/', '/index.html', '/icon.svg', '/icon-maskable.svg', '/manifest.json'];
+const CACHE = 'our-summer-v4';
+// Only URLs the Next.js server actually serves. There is no /index.html route:
+// precaching it made addAll() reject, so the worker never installed.
+const ASSETS = ['/', '/icon.svg', '/icon-maskable.svg', '/manifest.json'];
 
 // Install — pre-cache core assets
 self.addEventListener('install', e => {
@@ -19,34 +21,54 @@ self.addEventListener('activate', e => {
   self.clients.claim();
 });
 
-// Fetch — cache-first for our assets, network-first for fonts/external
-self.addEventListener('fetch', e => {
-  const url = new URL(e.request.url);
+function putInCache(request, response) {
+  if (!response || !response.ok) return;
+  const clone = response.clone();
+  caches.open(CACHE).then(c => c.put(request, clone));
+}
 
-  // Skip non-GET and cross-origin non-font requests
-  if (e.request.method !== 'GET') return;
+self.addEventListener('fetch', e => {
+  const { request } = e;
+  if (request.method !== 'GET') return;
+
+  const url = new URL(request.url);
 
   // Google Fonts — network first, fall back silently
   if (url.hostname.includes('fonts.google') || url.hostname.includes('fonts.gstatic')) {
     e.respondWith(
-      fetch(e.request).catch(() => new Response('', { status: 200 }))
+      fetch(request).catch(() => new Response('', { status: 200 }))
     );
     return;
   }
 
-  // Everything else — cache first, then network, then cached index.html fallback
-  e.respondWith(
-    caches.match(e.request).then(cached => {
-      if (cached) return cached;
-      return fetch(e.request)
+  // Other cross-origin requests (Supabase etc.) — leave them to the network
+  if (url.origin !== self.location.origin) return;
+
+  // Next.js internals that are not content-hashed (HMR, data, image optimizer) — network only
+  if (url.pathname.startsWith('/_next/') && !url.pathname.startsWith('/_next/static/')) return;
+
+  // Page navigations — network first so a new deploy is picked up immediately,
+  // fall back to the cached shell when offline
+  if (request.mode === 'navigate') {
+    e.respondWith(
+      fetch(request)
         .then(res => {
-          if (res.ok && url.origin === self.location.origin) {
-            const clone = res.clone();
-            caches.open(CACHE).then(c => c.put(e.request, clone));
-          }
+          putInCache(request, res);
           return res;
         })
-        .catch(() => caches.match('/index.html'));
+        .catch(() => caches.match(request).then(cached => cached || caches.match('/')))
+    );
+    return;
+  }
+
+  // Static assets (hashed chunks, icons, manifest) — cache first, then network
+  e.respondWith(
+    caches.match(request).then(cached => {
+      if (cached) return cached;
+      return fetch(request).then(res => {
+        putInCache(request, res);
+        return res;
+      });
     })
   );
 });
